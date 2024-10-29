@@ -1,4 +1,3 @@
 export interface OriginAndDestination {
-  lat: string;
-  lng: string;
+  value: string;
 }

@@ -23,13 +23,7 @@ app.get(
       });
     }
 
-    const originLat = origin.lat;
-    const originLng = origin.lng;
-
-    const destinationLat = destination.lat;
-    const destinationLng = destination.lng;
-
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originLat},${originLng}&destinations=${destinationLat},${destinationLng}&key=${googleMapsApiKey}`;
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?departure_time=now&destinations=${destination}&origins=${origin}&key=${googleMapsApiKey}`;
 
     try {
       const response = await axios.get(url);

@@ -4,7 +4,7 @@ import Form from "../components/Form";
 
 const Homepage = () => {
   return (
-    <div className="rootWrapper w-screen h-screen bg-background">
+    <div className="rootWrapper bg-background">
       <div className="mainWrapper flex justify-center">
         <div className="homeWrapper max-w-screen-xl w-10/12">
           <Navigation />
