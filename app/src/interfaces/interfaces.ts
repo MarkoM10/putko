@@ -7,9 +7,14 @@ export interface Car {
   model: string;
   body_styles: string[];
 }
+export interface Model {
+  name: string;
+}
+
 export interface carManufacturer {
   id: number;
   manufacturer: string;
+  models: string[];
 }
 
 export interface CarManufacturers {

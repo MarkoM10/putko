@@ -23,6 +23,8 @@ const Form = () => {
     carManufacturers: [],
   });
 
+  const [chosenManufacturer, setChosenManufacturer] = useState<string>("");
+
   //Loading Google map
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: `${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`,
@@ -88,7 +90,8 @@ const Form = () => {
   const handleCarManufacturerChange = (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
-    console.log(event.target.value);
+    const manufacturer = event.target.value;
+    setChosenManufacturer(manufacturer);
   };
 
   if (!isLoaded) return <div>Loading Google maps...</div>;
@@ -96,7 +99,7 @@ const Form = () => {
   return (
     <div className="formWrapper my-6">
       <form onSubmit={handleSubmit} className="flex flex-col">
-        <div className="w-full grid md:grid-cols-2 md:gap-4">
+        <div className="w-full grid md:grid-cols-3 md:gap-4">
           <div className="mb-5">
             <label
               htmlFor="origin"
@@ -169,10 +172,13 @@ const Form = () => {
               className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
             >
               <option defaultChecked>Odaberi marku vozila...</option>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="FR">France</option>
-              <option value="DE">Germany</option>
+              {carManufacturers?.carManufacturers
+                .filter((el) => el.manufacturer === chosenManufacturer)
+                .map((manufacturer) =>
+                  manufacturer.models.map((model, index) => (
+                    <option key={index}>{model}</option>
+                  ))
+                )}
             </select>
           </div>
           <div className="mb-5">
@@ -187,10 +193,13 @@ const Form = () => {
               className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
             >
               <option defaultChecked>Odaberi godinu proizvodnje...</option>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="FR">France</option>
-              <option value="DE">Germany</option>
+              {Array.from({ length: 2025 - 1930 + 1 }, (_, i) => 1930 + i).map(
+                (year) => (
+                  <option key={year} value={year}>
+                    {year + " god."}
+                  </option>
+                )
+              )}
             </select>
           </div>
           <div className="mb-5">
@@ -210,6 +219,72 @@ const Form = () => {
               <option value="FR">Gas</option>
               <option value="DE">Metan</option>
             </select>
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="power"
+              className="block mb-1 text-sm text-secondary font-inter"
+            >
+              Konjaža
+            </label>
+            <select
+              id="power"
+              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
+            >
+              <option defaultChecked>Odaberi konjažu...</option>
+              <option value="25kW">25kW (34KS)</option>
+              <option value="35kW">35kW (48KS)</option>
+              <option value="44kW" selected>
+                44kW (60KS)
+              </option>
+              <option value="55kW">55kW (75KS)</option>
+              <option value="66kW">66kW (90KS)</option>
+              <option value="74kW">74kW (101KS)</option>
+              <option value="80kW">80kW (109KS)</option>
+              <option value="85kW">85kW (116KS)</option>
+              <option value="96kW">96kW (131KS)</option>
+              <option value="110kW">110kW (150KS)</option>
+              <option value="125kW">125kW (170KS)</option>
+              <option value="147kW">147kW (200KS)</option>
+              <option value="184kW">184kW (250KS)</option>
+              <option value="222kW">222kW (302KS)</option>
+              <option value="262kW">262kW (356KS)</option>
+              <option value="294kW">294kW (402KS)</option>
+              <option value="333kW">333kW (453KS)</option>
+            </select>
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="cubicasis"
+              className="block mb-1 text-sm text-secondary font-inter"
+            >
+              Kubikaža
+            </label>
+            <input
+              name="cubicasis"
+              id="cubicasis"
+              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
+              placeholder="Unesi kubikažu (cm3)..."
+              type="text"
+              required
+            ></input>
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="cubicasis"
+              className="block mb-1 text-sm text-secondary font-inter"
+            >
+              Broj osoba sa kojima deliš troškove (opciono)
+            </label>
+            <input
+              name="cubicasis"
+              id="cubicasis"
+              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
+              placeholder="Unesi broj osoba..."
+              type="number"
+              min="0"
+              required
+            ></input>
           </div>
         </div>
         <div className="w-full flex justify-center">
