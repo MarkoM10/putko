@@ -27,6 +27,7 @@ app.get(
 
     try {
       const response = await axios.get(url);
+      console.log(response.data);
       res.json(response.data);
     } catch (error) {
       res.status(500).json({ error: "Error fetching distance data" });

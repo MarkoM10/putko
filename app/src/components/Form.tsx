@@ -1,14 +1,10 @@
-import {
-  Autocomplete,
-  useJsApiLoader,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import axios from "axios";
+import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
+import { ChangeEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setResponseData } from "../redux/distanceMatrix/distanceMatrixResSlice";
 import React from "react";
-import { CarManufacturers } from "../interfaces/interfaces";
+import { FormData } from "../interfaces/interfaces";
+import { fetchDistance } from "../services/distanceService";
 
 const Form = () => {
   const dispatch = useDispatch();
@@ -19,11 +15,12 @@ const Form = () => {
   const destinationRef = React.useRef<google.maps.places.Autocomplete | null>(
     null
   );
-  const [carManufacturers, setCarManufacturers] = useState<CarManufacturers>({
-    carManufacturers: [],
+  const [formData, setFormData] = useState<FormData>({
+    fuelConsumption: "",
+    fuelPrice: "",
+    paytolls: 0,
+    passengersNum: 0,
   });
-
-  const [chosenManufacturer, setChosenManufacturer] = useState<string>("");
 
   //Loading Google map
   const { isLoaded } = useJsApiLoader({
@@ -51,246 +48,137 @@ const Form = () => {
     }
   };
 
+  //Getting all form input data and setting it to state variable
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { value, name } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   //Sending origin and destination locations params to backend and getting back the distance Matrix response
-  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    console.log(origin);
-    console.log(destination);
-
+  const handleDistance = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/distance`, {
-        params: { origin, destination },
-      });
-      const { data } = response;
+      const data = await fetchDistance(origin, destination);
       const distanceInM = data.rows[0].elements[0].distance.value;
       const distanceInKm = distanceInM / 1000;
 
       dispatch(setResponseData(data));
       setDistance(distanceInKm);
-
-      console.log(data);
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   };
 
-  useEffect(() => {
-    // Fetch the data from the public/cars.json file
-    fetch("/cars.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setCarManufacturers(data);
-      })
-      .catch((error) =>
-        console.error("Error fetching car manufacturers:", error)
-      );
-  }, []);
-
-  const handleCarManufacturerChange = (
-    event: ChangeEvent<HTMLSelectElement>
-  ) => {
-    const manufacturer = event.target.value;
-    setChosenManufacturer(manufacturer);
+  //Getting the distance data on form submit, and getting the response from Chat GPT
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleDistance();
   };
+
+  //Form elements inside list for more DRY code
+  const formFields = [
+    {
+      label: "Od",
+      id: "origin",
+      placeholder: "Unesi polaznu tačku...",
+      isAutocomplete: true,
+      ref: originRef,
+      onPlaceChanged: handleOriginChange,
+      required: true,
+    },
+    {
+      label: "Do",
+      id: "destination",
+      placeholder: "Unesi odredišnu tačku...",
+      isAutocomplete: true,
+      ref: destinationRef,
+      onPlaceChanged: handleDestinationChange,
+      required: true,
+    },
+    {
+      label: "Potrošnja na 100km (u litrima)",
+      id: "fuelConsumption",
+      placeholder: "Unesi potrošnju u L...",
+      type: "number",
+    },
+    {
+      label: "Cena goriva (po litru)",
+      id: "fuelPrice",
+      placeholder: "Unesi cenu goriva po litru...",
+      type: "number",
+    },
+    {
+      label: "Očekivane putarine (opciono)",
+      id: "paytolls",
+      placeholder: "Unesi očekivanu svotu za putarine u RSD...",
+      type: "number",
+    },
+    {
+      label: "Broj putnika (opciono)",
+      id: "passengersNum",
+      placeholder: "Unesi broj osoba...",
+      type: "number",
+    },
+  ];
 
   if (!isLoaded) return <div>Loading Google maps...</div>;
 
   return (
-    <div className="formWrapper my-6">
+    <div className="formWrapper">
+      <div className="introTextWrapper mb-2 md:w-3/4">
+        <h1 className="text-primary-400 font-josefin text-2xl  font-bold mb-2">
+          Najprecizniji kalkulator putnih troškova
+        </h1>
+        <p className="text-secondary font-josefin text-xl">
+          Unesi relaciju u okviru polja i mi ćemo ti vrlo precizno izračunati
+          kompletne putne troškove.
+        </p>
+      </div>
       <form onSubmit={handleSubmit} className="flex flex-col">
-        <div className="w-full grid md:grid-cols-3 md:gap-4">
-          <div className="mb-5">
-            <label
-              htmlFor="origin"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Od
-            </label>
-            <Autocomplete
-              onLoad={(autocomplete) => (originRef.current = autocomplete)}
-              onPlaceChanged={handleOriginChange}
-            >
-              <input
-                type="text"
-                id="origin"
-                className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-                placeholder="Unesi polaznu tačku..."
-                required
-              />
-            </Autocomplete>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="origin"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Do
-            </label>
-            <Autocomplete
-              onLoad={(autocomplete) => (destinationRef.current = autocomplete)}
-              onPlaceChanged={handleDestinationChange}
-            >
-              <input
-                type="text"
-                id="destination"
-                className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-                placeholder="Unesi odredišnu tačku..."
-                required
-              />
-            </Autocomplete>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="countries"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Model
-            </label>
-            <select
-              id="countries"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-              onChange={handleCarManufacturerChange}
-            >
-              <option defaultChecked>Odaberi model vozila...</option>
-              {carManufacturers?.carManufacturers.map((el) => (
-                <option key={el.id} value={el.manufacturer}>
-                  {el.manufacturer}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="countries"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Marka
-            </label>
-            <select
-              id="countries"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-            >
-              <option defaultChecked>Odaberi marku vozila...</option>
-              {carManufacturers?.carManufacturers
-                .filter((el) => el.manufacturer === chosenManufacturer)
-                .map((manufacturer) =>
-                  manufacturer.models.map((model, index) => (
-                    <option key={index}>{model}</option>
-                  ))
-                )}
-            </select>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="countries"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Godina proizvodnje
-            </label>
-            <select
-              id="countries"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-            >
-              <option defaultChecked>Odaberi godinu proizvodnje...</option>
-              {Array.from({ length: 2025 - 1930 + 1 }, (_, i) => 1930 + i).map(
-                (year) => (
-                  <option key={year} value={year}>
-                    {year + " god."}
-                  </option>
-                )
+        <div className="w-full grid md:gap-2">
+          {formFields.map((field) => (
+            <div key={field.id} className="mb-5">
+              <label
+                htmlFor={field.id}
+                className="block mb-1 text-sm text-secondary font-inter"
+              >
+                {field.label}
+              </label>
+              {field.isAutocomplete ? (
+                <Autocomplete
+                  onLoad={(autocomplete) => (field.ref.current = autocomplete)}
+                  onPlaceChanged={field.onPlaceChanged}
+                >
+                  <input
+                    type="text"
+                    id={field.id}
+                    className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
+                    placeholder={field.placeholder}
+                    required={field.required}
+                  />
+                </Autocomplete>
+              ) : (
+                <input
+                  name={field.id}
+                  id={field.id}
+                  type={field.type || "text"}
+                  min={field.type === "number" ? "0" : undefined}
+                  className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
+                  placeholder={field.placeholder}
+                  onChange={handleInputChange}
+                />
               )}
-            </select>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="countries"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Gorivo
-            </label>
-            <select
-              id="countries"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-            >
-              <option defaultChecked>Odaberi gorivo...</option>
-              <option value="US">Dizel</option>
-              <option value="CA">Benzin</option>
-              <option value="FR">Gas</option>
-              <option value="DE">Metan</option>
-            </select>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="power"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Konjaža
-            </label>
-            <select
-              id="power"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-            >
-              <option defaultChecked>Odaberi konjažu...</option>
-              <option value="25kW">25kW (34KS)</option>
-              <option value="35kW">35kW (48KS)</option>
-              <option value="44kW" selected>
-                44kW (60KS)
-              </option>
-              <option value="55kW">55kW (75KS)</option>
-              <option value="66kW">66kW (90KS)</option>
-              <option value="74kW">74kW (101KS)</option>
-              <option value="80kW">80kW (109KS)</option>
-              <option value="85kW">85kW (116KS)</option>
-              <option value="96kW">96kW (131KS)</option>
-              <option value="110kW">110kW (150KS)</option>
-              <option value="125kW">125kW (170KS)</option>
-              <option value="147kW">147kW (200KS)</option>
-              <option value="184kW">184kW (250KS)</option>
-              <option value="222kW">222kW (302KS)</option>
-              <option value="262kW">262kW (356KS)</option>
-              <option value="294kW">294kW (402KS)</option>
-              <option value="333kW">333kW (453KS)</option>
-            </select>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="cubicasis"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Kubikaža
-            </label>
-            <input
-              name="cubicasis"
-              id="cubicasis"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-              placeholder="Unesi kubikažu (cm3)..."
-              type="text"
-              required
-            ></input>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="cubicasis"
-              className="block mb-1 text-sm text-secondary font-inter"
-            >
-              Broj osoba sa kojima deliš troškove (opciono)
-            </label>
-            <input
-              name="cubicasis"
-              id="cubicasis"
-              className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block w-full p-2"
-              placeholder="Unesi broj osoba..."
-              type="number"
-              min="0"
-              required
-            ></input>
-          </div>
+            </div>
+          ))}
         </div>
-        <div className="w-full flex justify-center">
+        <div>
           <button
             type="submit"
-            className="text-white bg-primary-400 hover:bg-primary-200 font-medium rounded-lg text-sm px-5 py-1.5 my-2 w-96"
+            className="text-white bg-primary-400 hover:bg-primary-200 font-medium rounded-lg text-sm px-5 py-1.5 my-2 md:w-3/4 w-full"
           >
             Izračunaj
           </button>

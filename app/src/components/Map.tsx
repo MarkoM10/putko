@@ -48,7 +48,7 @@ const Map = () => {
   if (!isLoaded) return <div>Loading Google maps...</div>;
 
   return (
-    <div className="googleMapWrapper h-128">
+    <div className="googleMapWrapper h-[40rem] md:h-auto">
       <GoogleMap
         zoom={5}
         mapContainerClassName="w-full h-full"

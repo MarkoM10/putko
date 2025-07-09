@@ -20,3 +20,10 @@ export interface carManufacturer {
 export interface CarManufacturers {
   carManufacturers: carManufacturer[];
 }
+
+export interface FormData {
+  fuelConsumption: string;
+  fuelPrice: string;
+  paytolls: number;
+  passengersNum: number;
+}
