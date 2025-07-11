@@ -153,7 +153,7 @@ const Form = () => {
       <form onSubmit={handleSubmit} className="flex flex-col">
         <div className="w-full grid md:gap-2">
           {formFields.map((field) => (
-            <div key={field.id || field.name} className="mb-5">
+            <div key={field.id || field.name} className="mb-4">
               {field.type === "radio" && field.options && field.values ? (
                 <>
                   <label className="block mb-1 text-sm text-secondary font-inter">

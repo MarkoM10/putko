@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Navigation = () => {
   return (
-    <div className="navigationWrapper p-5 w-full flex justify-between mt-8">
+    <div className="navigationWrapper p-5 w-full flex justify-between mt-5">
       <Link to="/">
         <img src={logo} alt="putko logotip" className="w-24" />
       </Link>

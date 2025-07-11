@@ -22,6 +22,7 @@ module.exports = {
       secondary: "#17242A",
       background: "#F5F5F5",
       white: "#ffffff",
+      black: "#000000",
       border: "#D9D9D9",
     },
     fontFamily: {
