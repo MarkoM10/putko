@@ -21,9 +21,10 @@ export interface CarManufacturers {
   carManufacturers: carManufacturer[];
 }
 
-export interface FormData {
-  fuelConsumption: string;
-  fuelPrice: string;
+export interface TripFormData {
+  fuelConsumption: number;
+  fuelPrice: number;
   paytolls: number;
   passengersNum: number;
+  roundTrip: number;
 }

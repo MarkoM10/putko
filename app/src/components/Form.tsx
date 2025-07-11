@@ -3,23 +3,25 @@ import { ChangeEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setResponseData } from "../redux/distanceMatrix/distanceMatrixResSlice";
 import React from "react";
-import { FormData } from "../interfaces/interfaces";
+import { TripFormData } from "../interfaces/interfaces";
 import { fetchDistance } from "../services/distanceService";
+import calculateTripCosts from "../utils/calculateTripCosts";
 
 const Form = () => {
   const dispatch = useDispatch();
   const [origin, setOrigin] = useState<string>(""); //origin cordinates
   const [destination, setDestination] = useState<string>(""); //destination cordinates
-  const [distance, setDistance] = useState<number | null>(null);
+  // const [distance, setDistance] = useState<number>(0);
   const originRef = React.useRef<google.maps.places.Autocomplete | null>(null);
   const destinationRef = React.useRef<google.maps.places.Autocomplete | null>(
     null
   );
-  const [formData, setFormData] = useState<FormData>({
-    fuelConsumption: "",
-    fuelPrice: "",
+  const [formData, setFormData] = useState<TripFormData>({
+    fuelConsumption: 0,
+    fuelPrice: 0,
     paytolls: 0,
     passengersNum: 0,
+    roundTrip: 1,
   });
 
   //Loading Google map
@@ -55,7 +57,7 @@ const Form = () => {
     const { value, name } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: Number(value),
     }));
   };
 
@@ -65,18 +67,21 @@ const Form = () => {
       const data = await fetchDistance(origin, destination);
       const distanceInM = data.rows[0].elements[0].distance.value;
       const distanceInKm = distanceInM / 1000;
-
       dispatch(setResponseData(data));
-      setDistance(distanceInKm);
+      // setDistance(distanceInKm);
+      return distanceInKm;
     } catch (error) {
       console.error("Error fetching data: ", error);
+      return 0;
     }
   };
 
   //Getting the distance data on form submit, and getting the response from Chat GPT
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    handleDistance();
+    const distance = await handleDistance();
+    console.log(formData);
+    const tripCosts = calculateTripCosts(distance, formData);
   };
 
   //Form elements inside list for more DRY code
@@ -108,7 +113,7 @@ const Form = () => {
     {
       label: "Cena goriva (po litru)",
       id: "fuelPrice",
-      placeholder: "Unesi cenu goriva po litru...",
+      placeholder: "Unesi cenu goriva po litru u RSD...",
       type: "number",
     },
     {
@@ -122,6 +127,13 @@ const Form = () => {
       id: "passengersNum",
       placeholder: "Unesi broj osoba...",
       type: "number",
+    },
+    {
+      label: "Povratno putovanje",
+      name: "roundTrip",
+      type: "radio",
+      options: ["Da", "Ne"],
+      values: [1, 0],
     },
   ];
 
@@ -141,36 +153,67 @@ const Form = () => {
       <form onSubmit={handleSubmit} className="flex flex-col">
         <div className="w-full grid md:gap-2">
           {formFields.map((field) => (
-            <div key={field.id} className="mb-5">
-              <label
-                htmlFor={field.id}
-                className="block mb-1 text-sm text-secondary font-inter"
-              >
-                {field.label}
-              </label>
-              {field.isAutocomplete ? (
-                <Autocomplete
-                  onLoad={(autocomplete) => (field.ref.current = autocomplete)}
-                  onPlaceChanged={field.onPlaceChanged}
-                >
-                  <input
-                    type="text"
-                    id={field.id}
-                    className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
-                    placeholder={field.placeholder}
-                    required={field.required}
-                  />
-                </Autocomplete>
+            <div key={field.id || field.name} className="mb-5">
+              {field.type === "radio" && field.options && field.values ? (
+                <>
+                  <label className="block mb-1 text-sm text-secondary font-inter">
+                    {field.label}
+                  </label>
+                  <div className="flex gap-4">
+                    {field.options.map((optionLabel, index) => (
+                      <label
+                        key={field.values[index]}
+                        htmlFor={`${field.name}${field.values[index]}`}
+                        className="flex items-center gap-1 text-sm text-gray-700"
+                      >
+                        <input
+                          type="radio"
+                          name={field.name}
+                          id={`${field.name}${field.values[index]}`}
+                          value={field.values[index]}
+                          onChange={handleInputChange}
+                          className="accent-primary-400"
+                        />
+                        {optionLabel}
+                      </label>
+                    ))}
+                  </div>
+                </>
               ) : (
-                <input
-                  name={field.id}
-                  id={field.id}
-                  type={field.type || "text"}
-                  min={field.type === "number" ? "0" : undefined}
-                  className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
-                  placeholder={field.placeholder}
-                  onChange={handleInputChange}
-                />
+                <>
+                  <label
+                    htmlFor={field.id}
+                    className="block mb-1 text-sm text-secondary font-inter"
+                  >
+                    {field.label}
+                  </label>
+                  {field.isAutocomplete ? (
+                    <Autocomplete
+                      onLoad={(autocomplete) =>
+                        (field.ref.current = autocomplete)
+                      }
+                      onPlaceChanged={field.onPlaceChanged}
+                    >
+                      <input
+                        type="text"
+                        id={field.id}
+                        className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
+                        placeholder={field.placeholder}
+                        required={field.required}
+                      />
+                    </Autocomplete>
+                  ) : (
+                    <input
+                      name={field.id}
+                      id={field.id}
+                      type={field.type || "text"}
+                      min={field.type === "number" ? "0" : undefined}
+                      className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
+                      placeholder={field.placeholder}
+                      onChange={handleInputChange}
+                    />
+                  )}
+                </>
               )}
             </div>
           ))}
