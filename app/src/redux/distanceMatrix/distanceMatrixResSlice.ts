@@ -35,8 +35,6 @@ const distanceMatrixResSlice = createSlice({
   initialState,
   reducers: {
     setResponseData: (state, action: PayloadAction<DistanceMatrixRes>) => {
-      // console.log("Akcija: ", action);
-      // console.log("State:", state);
       return action.payload;
     },
   },

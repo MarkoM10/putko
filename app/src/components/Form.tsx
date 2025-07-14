@@ -6,6 +6,8 @@ import React from "react";
 import { TripFormData } from "../interfaces/interfaces";
 import { fetchDistance } from "../services/distanceService";
 import calculateTripCosts from "../utils/calculateTripCosts";
+import { openModal } from "../redux/reportModal/reportModalSlice";
+import { setTripData } from "../redux/tripCalculationData/tripCalculationDataSlice";
 
 const Form = () => {
   const dispatch = useDispatch();
@@ -76,12 +78,14 @@ const Form = () => {
     }
   };
 
-  //Getting the distance data on form submit, and getting the response from Chat GPT
+  //Getting the distance data on form submit
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const distance = await handleDistance();
-    console.log(formData);
     const tripCosts = calculateTripCosts(distance, formData);
+    const tripData = { ...tripCosts, destination, origin };
+    tripData && dispatch(openModal());
+    dispatch(setTripData(tripData));
   };
 
   //Form elements inside list for more DRY code
@@ -143,7 +147,7 @@ const Form = () => {
     <div className="formWrapper">
       <div className="introTextWrapper mb-2 md:w-3/4">
         <h1 className="text-primary-400 font-josefin text-2xl  font-bold mb-2">
-          Najprecizniji kalkulator putnih troškova
+          Kalkulator putnih troškova
         </h1>
         <p className="text-secondary font-josefin text-xl">
           Unesi relaciju u okviru polja i mi ćemo ti vrlo precizno izračunati

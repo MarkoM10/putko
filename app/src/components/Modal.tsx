@@ -1,52 +1,110 @@
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { closeModal } from "../redux/reportModal/reportModalSlice";
+import euroConversion from "../utils/euroConversion";
+
 const Modal = () => {
+  const dispatch = useDispatch();
+  const { toggleModal } = useSelector((state: RootState) => state.toggleModal);
+  const { tripData } = useSelector((state: RootState) => state);
+
+  const {
+    totalDistance,
+    distancePerDirection,
+    fuelConsumption,
+    fuelPrice,
+    paytolls,
+    roundTrip,
+    passengersNum,
+    totalTripCost,
+    tripCostPerPerson,
+    origin,
+    destination,
+  } = tripData;
+
   return (
-    <div>
-      <div
-        id="default-modal"
-        aria-hidden="true"
-        className="min-h-screen bg-black bg-opacity-50 flex fixed top-0 right-0 left-0 z-1 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
-      >
-        <div className="relative p-4 w-full max-w-2xl max-h-full">
-          <div className="relative bg-white rounded-lg shadow-sm">
-            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-              <h3 className="text-xl font-josefin font-bold text-gray-900 text-primary-400">
+    <>
+      {toggleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-2xl font-bold text-primary-400">
                 Pregled putnih troškova
-              </h3>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6 hover:text-primary-400 hover:cursor-pointer"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18 18 6M6 6l12 12"
-                />
-              </svg>
+              </h2>
             </div>
-            <div className="p-4 md:p-5 space-y-4">
-              <p className="text-base text-secondary">
-                With less than a month to go before the European Union enacts
-                new consumer privacy laws for its citizens, companies around the
-                world are updating their terms of service agreements to comply.
-              </p>
+
+            <div className="space-y-3 text-sm text-gray-700">
+              <div>
+                <p className="font-medium">Relacija:</p>
+                <p>
+                  {origin} → {destination}
+                </p>
+                <p>
+                  <span className="font-medium">Povratno putovanje:</span>{" "}
+                  {roundTrip === "Da" ? "Da" : "Ne"}
+                </p>
+              </div>
+
+              <div className="border-t pt-3">
+                <p>
+                  <span className="font-medium">Ukupna distanca:</span>{" "}
+                  {totalDistance} km
+                </p>
+                {roundTrip === "Da" && (
+                  <p>
+                    <span className="font-medium">
+                      Udaljenost u jednom pravcu:
+                    </span>{" "}
+                    {distancePerDirection} km
+                  </p>
+                )}
+              </div>
+
+              <div className="border-t pt-3">
+                <p>
+                  <span className="font-medium">Potrošnja goriva:</span>{" "}
+                  {fuelConsumption}L / 100km
+                </p>
+                <p>
+                  <span className="font-medium">Cena goriva:</span> {fuelPrice}{" "}
+                  RSD
+                </p>
+                <p>
+                  <span className="font-medium">Putarine:</span> {paytolls} RSD
+                </p>
+              </div>
+
+              <div className="border-t pt-3">
+                <p>
+                  <span className="font-medium">Broj putnika:</span>{" "}
+                  {passengersNum}
+                </p>
+                <p>
+                  <span className="font-medium">Ukupna cena putovanja:</span>{" "}
+                  {totalTripCost} RSD (€{euroConversion(totalTripCost)})
+                </p>
+                <p>
+                  <span className="font-medium">Cena po osobi:</span>{" "}
+                  {tripCostPerPerson} RSD (€{euroConversion(tripCostPerPerson)})
+                </p>
+              </div>
             </div>
-            <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-              <button
-                data-modal-hide="default-modal"
-                type="button"
-                className="text-white bg-primary-400 hover:bg-primary-200 font-medium rounded-lg text-sm px-5 py-2.5"
-              >
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button className="bg-primary-400 hover:bg-primary-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                 Generiši PDF
+              </button>
+              <button
+                onClick={() => dispatch(closeModal())}
+                className="text-secondary hover:text-primary-400 text-sm font-medium"
+              >
+                Zatvori
               </button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

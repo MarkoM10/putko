@@ -11,7 +11,9 @@ const calculateTripCosts = (distance: number, formData: TripFormData) => {
   );
 
   const tripCostPerPerson =
-    passengersNum && Math.round(totalTripCost / passengersNum);
+    passengersNum > 0
+      ? Math.round(totalTripCost / passengersNum)
+      : totalTripCost;
 
   const tripReport = {
     totalDistance: Math.round(roundTrip ? distance * 2 : distance),
@@ -25,6 +27,7 @@ const calculateTripCosts = (distance: number, formData: TripFormData) => {
     tripCostPerPerson,
   };
 
+  // console.log(tripReport);
   return tripReport;
 };
 
