@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { closeModal } from "../redux/reportModal/reportModalSlice";
 import euroConversion from "../utils/euroConversion";
+import handleGeneratePDF from "../utils/generatePDF";
 
 const Modal = () => {
   const dispatch = useDispatch();
@@ -91,7 +92,10 @@ const Modal = () => {
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
-              <button className="bg-primary-400 hover:bg-primary-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+              <button
+                onClick={() => handleGeneratePDF(tripData)}
+                className="bg-primary-400 hover:bg-primary-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+              >
                 Generiši PDF
               </button>
               <button

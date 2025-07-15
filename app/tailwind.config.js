@@ -24,6 +24,7 @@ module.exports = {
       white: "#ffffff",
       black: "#000000",
       border: "#D9D9D9",
+      danger: "#DC3545",
     },
     fontFamily: {
       josefin: ["Josefin Sans", "serif"],

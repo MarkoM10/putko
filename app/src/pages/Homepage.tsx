@@ -4,6 +4,7 @@ import Form from "../components/Form";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import Modal from "../components/Modal";
+import Spinner from "../components/Spinner";
 
 const Homepage = () => {
   const data = useSelector((state: RootState) => state);
@@ -17,6 +18,7 @@ const Homepage = () => {
             <Form />
             <Map />
             <Modal />
+            <Spinner />
           </div>
         </div>
       </div>

@@ -8,6 +8,8 @@ import { fetchDistance } from "../services/distanceService";
 import calculateTripCosts from "../utils/calculateTripCosts";
 import { openModal } from "../redux/reportModal/reportModalSlice";
 import { setTripData } from "../redux/tripCalculationData/tripCalculationDataSlice";
+import handleFormValidation from "../utils/formValidation";
+import { hideSpinner, showSpinner } from "../redux/Spinner/SpinnerSlice";
 
 const Form = () => {
   const dispatch = useDispatch();
@@ -25,6 +27,9 @@ const Form = () => {
     passengersNum: 0,
     roundTrip: 1,
   });
+  const [validationState, setValidationState] = useState<
+    Record<string, boolean>
+  >({});
 
   //Loading Google map
   const { isLoaded } = useJsApiLoader({
@@ -57,13 +62,19 @@ const Form = () => {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { value, name } = e.target;
+    const isValid = handleFormValidation(value, name);
+    setValidationState((prev) => ({
+      ...prev,
+      [name]: isValid,
+    }));
+
     setFormData((prev) => ({
       ...prev,
       [name]: Number(value),
     }));
   };
 
-  //Sending origin and destination locations params to backend and getting back the distance Matrix response
+  //Sending origin and destination locations params to backend and getting back the distance response
   const handleDistance = async () => {
     try {
       const data = await fetchDistance(origin, destination);
@@ -81,7 +92,17 @@ const Form = () => {
   //Getting the distance data on form submit
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isFormInvalid =
+      Object.values(validationState).includes(false) ||
+      Object.keys(validationState).length === 0 ||
+      origin === "" ||
+      destination === "";
+
+    if (isFormInvalid) return;
+
+    dispatch(showSpinner());
     const distance = await handleDistance();
+    dispatch(hideSpinner());
     const tripCosts = calculateTripCosts(distance, formData);
     const tripData = { ...tripCosts, destination, origin };
     tripData && dispatch(openModal());
@@ -154,7 +175,7 @@ const Form = () => {
           kompletne putne troškove.
         </p>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col">
+      <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
         <div className="w-full grid md:gap-2">
           {formFields.map((field) => (
             <div key={field.id || field.name} className="mb-4">
@@ -174,6 +195,7 @@ const Form = () => {
                           type="radio"
                           name={field.name}
                           id={`${field.name}${field.values[index]}`}
+                          defaultChecked={index === 0}
                           value={field.values[index]}
                           onChange={handleInputChange}
                           className="accent-primary-400"
@@ -212,7 +234,11 @@ const Form = () => {
                       id={field.id}
                       type={field.type || "text"}
                       min={field.type === "number" ? "0" : undefined}
-                      className="bg-gray-50 border border-border text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2"
+                      className={`bg-gray-50 border ${
+                        field.id && validationState[field.id] === false
+                          ? "border-danger"
+                          : "border-border"
+                      } text-gray-900 text-sm rounded-lg block md:w-3/4 w-full p-2`}
                       placeholder={field.placeholder}
                       onChange={handleInputChange}
                     />

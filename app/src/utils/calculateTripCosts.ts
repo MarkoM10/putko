@@ -27,7 +27,6 @@ const calculateTripCosts = (distance: number, formData: TripFormData) => {
     tripCostPerPerson,
   };
 
-  // console.log(tripReport);
   return tripReport;
 };
 
