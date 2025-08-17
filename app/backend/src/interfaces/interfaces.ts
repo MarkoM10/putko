@@ -1,4 +1,3 @@
-export interface QueryParams {
-  origin: { lat: number; lng: number };
-  destination: { lat: number; lng: number };
-}
+// export interface AuthRequest extends Request {
+//   user?: { userId: number; email: string };
+// }
