@@ -8,10 +8,10 @@ import { fetchDistance } from "../services/distanceService";
 import calculateTripCosts from "../utils/calculateTripCosts";
 import { openModal } from "../redux/reportModal/reportModalSlice";
 import { setTripData } from "../redux/tripCalculationData/tripCalculationDataSlice";
-import handleFormValidation from "../utils/formValidation";
+import { handleFormValidation } from "../utils/formValidation";
 import { hideSpinner, showSpinner } from "../redux/Spinner/SpinnerSlice";
 
-const Form = () => {
+const TripForm = () => {
   const dispatch = useDispatch();
   const [origin, setOrigin] = useState<string>(""); //origin cordinates
   const [destination, setDestination] = useState<string>(""); //destination cordinates
@@ -261,4 +261,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default TripForm;

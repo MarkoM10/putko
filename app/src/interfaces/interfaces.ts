@@ -28,3 +28,26 @@ export interface TripFormData {
   passengersNum: number;
   roundTrip: number;
 }
+
+export interface ISignInFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface ISignInResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ILogInFormData {
+  email: string;
+  password: string;
+}
+
+export interface ILoginResponse {
+  success: boolean;
+  message: string;
+  token: string;
+}

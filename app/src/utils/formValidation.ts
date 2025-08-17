@@ -1,5 +1,5 @@
 //Form validation
-const handleFormValidation = (value: string, name: string) => {
+export const handleFormValidation = (value: string, name: string) => {
   let validate = false;
 
   switch (name) {
@@ -26,9 +26,38 @@ const handleFormValidation = (value: string, name: string) => {
     case "roundTrip":
       value === "" ? (validate = false) : (validate = true);
       return validate;
-  }
 
-  return validate;
+    default:
+      return validate;
+  }
 };
 
-export default handleFormValidation;
+export const handleSignInFormValidation = (
+  value: string,
+  name: string,
+  compareValue?: string
+): boolean => {
+  let validate = false;
+
+  switch (name) {
+    case "username":
+      validate = value.trim() !== "" && value.length >= 3 && value.length <= 20;
+      return validate;
+
+    case "email":
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      validate = emailRegex.test(value);
+      return validate;
+
+    case "password":
+      validate = value.trim() !== "" && value.length >= 6;
+      return validate;
+
+    case "confirmPassword":
+      validate = value === compareValue && value.trim() !== "";
+      return validate;
+
+    default:
+      return validate;
+  }
+};

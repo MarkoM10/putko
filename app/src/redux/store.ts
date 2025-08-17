@@ -3,6 +3,8 @@ import distanceMatrixReducer from "./distanceMatrix/distanceMatrixResSlice";
 import reportModalReducer from "./reportModal/reportModalSlice";
 import tripDataReducer from "./tripCalculationData/tripCalculationDataSlice";
 import spinnerReducer from "./Spinner/SpinnerSlice";
+import isLoginTabReducer from "./authTab/authTabSlice";
+import alertReducer from "./alert/alertSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     toggleModal: reportModalReducer,
     tripData: tripDataReducer,
     toggleSpinner: spinnerReducer,
+    isLoginTab: isLoginTabReducer,
+    alertReducer: alertReducer,
   },
 });
 
