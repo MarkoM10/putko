@@ -7,20 +7,37 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { ITripCalcData } from "../redux/tripCalculationData/tripCalculationDataSlice";
 const Map = () => {
-  const matrixResData = useSelector((state: RootState) => state.matrixResData);
+  const {
+    origin,
+    destination,
+    distance_km,
+    fuel_consumption,
+    fuel_price,
+    tolls,
+    passengers,
+    is_round_trip,
+    total_cost,
+    cost_per_person,
+  } = useSelector(
+    (state: { tripCalcData: ITripCalcData }) => state.tripCalcData
+  );
+
+  const distance_n = Number(distance_km);
+
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
 
   //Rendering distance between origin and destination
   useEffect(() => {
-    if (matrixResData.destination_addresses.length > 0) {
+    if (distance_n > 0) {
       const directionsService = new google.maps.DirectionsService();
 
       directionsService.route(
         {
-          origin: matrixResData.origin_addresses[0],
-          destination: matrixResData.destination_addresses[0],
+          origin: origin,
+          destination: destination,
           travelMode: google.maps.TravelMode.DRIVING,
         },
         (result, status) => {
@@ -32,7 +49,7 @@ const Map = () => {
         }
       );
     }
-  }, [matrixResData]);
+  }, [origin]);
 
   //Setting Marker starting position to be in Belgrade
   const center = { lat: 44.7866, lng: 20.4489 };
@@ -48,7 +65,7 @@ const Map = () => {
   if (!isLoaded) return <div>Loading Google maps...</div>;
 
   return (
-    <div className="googleMapWrapper h-[40rem] md:h-auto">
+    <div className="googleMapWrapper h-[40rem] md:h-auto rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none overflow-hidden">
       <GoogleMap
         zoom={5}
         mapContainerClassName="w-full h-full"

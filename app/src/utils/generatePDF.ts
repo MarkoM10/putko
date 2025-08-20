@@ -1,10 +1,10 @@
 import jsPDF from "jspdf";
-import { ITripData } from "../redux/tripCalculationData/tripCalculationDataSlice";
+// import { ITripData } from "../redux/tripCalculationData/tripCalculationDataSlice";
 import "../fonts/JosefinSans-Regular-normal";
 import "../fonts/JosefinSans-Bold-normal";
 import euroConversion from "./euroConversion";
 
-const handleGeneratePDF = (tripData: ITripData) => {
+const handleGeneratePDF = (tripData: any) => {
   const doc = new jsPDF();
 
   if (!tripData) return;

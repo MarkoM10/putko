@@ -6,6 +6,8 @@ import { ILogInFormData } from "../interfaces/interfaces";
 import { hideSpinner, showSpinner } from "../redux/Spinner/SpinnerSlice";
 import { loginService } from "../services/loginService";
 import { showAlert } from "../redux/alert/alertSlice";
+import { setToken } from "../redux/token/tokenSlice";
+import { setUser } from "../redux/user/userSlice";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -47,18 +49,26 @@ const LoginForm = () => {
     const result = await loginService(loginFormData);
     dispatch(hideSpinner());
 
-    const { message, success, token } = result;
+    const { message, success, token, user } = result;
 
+    dispatch(setToken(token));
     dispatch(showAlert({ success, message }));
 
     if (success) {
-      navigate("/");
+      dispatch(
+        setUser({
+          user_id: user.user_id,
+          username: user.username,
+          user_email: user.user_email,
+        })
+      );
+      navigate("/home");
     }
   };
 
   return (
     <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
-      <h1 className="text-primary-400 font-josefin text-2xl  font-bold  text-center">
+      <h1 className="text-primary-900 font-josefin text-2xl  font-bold  text-center">
         Uloguj se
       </h1>
       <div>
@@ -87,7 +97,7 @@ const LoginForm = () => {
       </div>
       <button
         type="submit"
-        className="text-white bg-primary-400 hover:bg-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 my-2 w-full"
+        className="text-white bg-primary-900 hover:bg-primary-800 font-medium rounded-lg text-sm px-5 py-2.5 my-2 w-full"
       >
         Uloguj se
       </button>
@@ -95,7 +105,7 @@ const LoginForm = () => {
         Nemaš kreiran nalog?{" "}
         <span
           onClick={() => dispatch(setLoginTab(false))}
-          className="cursor-pointer text-primary-400"
+          className="cursor-pointer text-primary-900"
         >
           Registruj se
         </span>

@@ -1,34 +1,42 @@
-// import { Request, Response, NextFunction } from "express";
-// import jwt from "jsonwebtoken";
-// import { AuthRequest } from "../interfaces/interfaces";
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { IJwtPayload } from "../interfaces/interfaces";
 
-// export const authenticate = (
-//   req: AuthRequest,
-//   res: Response,
-//   next: NextFunction
-// ): any => {
-//   try {
-//     const authHeader = req.headers.authorization;
+export interface ICustomRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+  };
+}
 
-//     if (!authHeader) {
-//       return res.status(401).json({ message: "Token nije prosleđen" });
-//     }
+export const authMiddleware = (
+  req: ICustomRequest,
+  res: Response,
+  next: NextFunction
+): any => {
+  const authHeader = req.headers.authorization;
 
-//     const token = authHeader.split(" ")[1];
+  if (!authHeader) {
+    return res.status(401).json({ message: "Nedostaje authorization header." });
+  }
 
-//     if (!token) {
-//       return res.status(401).json({ message: "Token nije prosleđen" });
-//     }
+  const token = authHeader.split(" ")[1];
 
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
-//       userId: number;
-//       email: string;
-//     };
+  if (!token) {
+    return res.status(401).json({ message: "Token nije dostavljen." });
+  }
 
-//     req.user = { userId: decoded.userId, email: decoded.email };
+  try {
+    const secret = process.env.JWT_SECRET as string;
+    const decoded = jwt.verify(token, secret) as IJwtPayload;
 
-//     next();
-//   } catch (error) {
-//     return res.status(401).json({ message: "Nevažeći token" });
-//   }
-// };
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+    };
+
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: "Nevalidan ili istekao token." });
+  }
+};

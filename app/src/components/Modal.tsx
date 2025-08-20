@@ -1,108 +1,54 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { closeModal } from "../redux/reportModal/reportModalSlice";
-import euroConversion from "../utils/euroConversion";
-import handleGeneratePDF from "../utils/generatePDF";
+import { closeModal } from "../redux/modal/modalSlice";
+import { ButtonHTMLAttributes, ReactEventHandler } from "react";
+import { clearToken } from "../redux/token/tokenSlice";
 
-const Modal = () => {
+export default function Modal() {
+  const { isOpen, type, message } = useSelector(
+    (state: RootState) => state.toggleModal
+  );
   const dispatch = useDispatch();
-  const { toggleModal } = useSelector((state: RootState) => state.toggleModal);
-  const { tripData } = useSelector((state: RootState) => state);
 
-  const {
-    totalDistance,
-    distancePerDirection,
-    fuelConsumption,
-    fuelPrice,
-    paytolls,
-    roundTrip,
-    passengersNum,
-    totalTripCost,
-    tripCostPerPerson,
-    origin,
-    destination,
-  } = tripData;
+  const handleModalType = () => {
+    switch (type) {
+      case "LOGOUT_MODAL":
+        dispatch(clearToken());
+        dispatch(closeModal());
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleConfirm = () => {
+    handleModalType();
+  };
 
   return (
     <>
-      {toggleModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-2xl font-bold text-primary-400">
-                Pregled putnih troškova
-              </h2>
-            </div>
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+            <h2 className="text-xl font-semibold text-primary-900">
+              Potvrda akcije
+            </h2>
+            <p className="text-gray-600 mt-2">{message}</p>
 
-            <div className="space-y-3 text-sm text-gray-700">
-              <div>
-                <p className="font-medium">Relacija:</p>
-                <p>
-                  {origin} → {destination}
-                </p>
-                <p>
-                  <span className="font-medium">Povratno putovanje:</span>{" "}
-                  {roundTrip === "Da" ? "Da" : "Ne"}
-                </p>
-              </div>
-
-              <div className="border-t pt-3">
-                <p>
-                  <span className="font-medium">Ukupna distanca:</span>{" "}
-                  {totalDistance} km
-                </p>
-                {roundTrip === "Da" && (
-                  <p>
-                    <span className="font-medium">
-                      Udaljenost u jednom pravcu:
-                    </span>{" "}
-                    {distancePerDirection} km
-                  </p>
-                )}
-              </div>
-
-              <div className="border-t pt-3">
-                <p>
-                  <span className="font-medium">Potrošnja goriva:</span>{" "}
-                  {fuelConsumption}L / 100km
-                </p>
-                <p>
-                  <span className="font-medium">Cena goriva:</span> {fuelPrice}{" "}
-                  RSD
-                </p>
-                <p>
-                  <span className="font-medium">Putarine:</span> {paytolls} RSD
-                </p>
-              </div>
-
-              <div className="border-t pt-3">
-                <p>
-                  <span className="font-medium">Broj putnika:</span>{" "}
-                  {passengersNum}
-                </p>
-                <p>
-                  <span className="font-medium">Ukupna cena putovanja:</span>{" "}
-                  {totalTripCost} RSD (€{euroConversion(totalTripCost)})
-                </p>
-                <p>
-                  <span className="font-medium">Cena po osobi:</span>{" "}
-                  {tripCostPerPerson} RSD (€{euroConversion(tripCostPerPerson)})
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => handleGeneratePDF(tripData)}
-                className="bg-primary-400 hover:bg-primary-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-              >
-                Generiši PDF
-              </button>
+            <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={() => dispatch(closeModal())}
-                className="text-secondary hover:text-primary-400 text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300"
               >
-                Zatvori
+                Otkaži
+              </button>
+              <button
+                onClick={() => {
+                  handleConfirm();
+                }}
+                className="px-4 py-2 rounded-lg bg-primary-900 text-white hover:opacity-90"
+              >
+                Potvrdi
               </button>
             </div>
           </div>
@@ -110,6 +56,4 @@ const Modal = () => {
       )}
     </>
   );
-};
-
-export default Modal;
+}

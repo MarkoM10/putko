@@ -34,7 +34,15 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       { expiresIn: "1h" }
     );
 
-    return res.json({ message: "Uspešno ste se ulogovali!", token });
+    return res.json({
+      message: "Uspešno ste se ulogovali!",
+      token,
+      user: {
+        user_id: user.id,
+        username: user.username,
+        user_email: user.email,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Došlo je do greške prilikom logovanja.",
@@ -83,6 +91,12 @@ export const signUp = async (req: Request, res: Response): Promise<any> => {
       },
     });
 
+    const token = jwt.sign(
+      { userId: newUser.id, email: newUser.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1h" }
+    );
+
     res.status(201).json({
       message: "Registracija je uspešna!",
       user: {
@@ -90,6 +104,7 @@ export const signUp = async (req: Request, res: Response): Promise<any> => {
         username: newUser.username,
         email: newUser.email,
       },
+      token,
     });
   } catch (error) {
     res

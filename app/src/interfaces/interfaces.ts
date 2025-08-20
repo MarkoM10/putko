@@ -1,24 +1,8 @@
 export interface OriginAndDestination {
   value: string;
 }
-export interface Car {
-  year: string;
-  make: string;
-  model: string;
-  body_styles: string[];
-}
 export interface Model {
   name: string;
-}
-
-export interface carManufacturer {
-  id: number;
-  manufacturer: string;
-  models: string[];
-}
-
-export interface CarManufacturers {
-  carManufacturers: carManufacturer[];
 }
 
 export interface TripFormData {
@@ -39,6 +23,7 @@ export interface ISignInFormData {
 export interface ISignInResponse {
   success: boolean;
   message: string;
+  token: string | null;
 }
 
 export interface ILogInFormData {
@@ -49,5 +34,20 @@ export interface ILogInFormData {
 export interface ILoginResponse {
   success: boolean;
   message: string;
-  token: string;
+  token: string | null;
+  user: {
+    user_id: number | null;
+    username: string | null;
+    user_email: string | null;
+  };
+}
+
+export interface ITripData {
+  origin: string;
+  destination: string;
+  fuel_consumption: number;
+  fuel_price: number;
+  passengers: number;
+  tolls: number;
+  is_round_trip: number;
 }

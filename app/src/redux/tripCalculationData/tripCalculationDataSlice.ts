@@ -1,35 +1,39 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface ITripData {
-  destination: string;
+export interface ITripCalcData {
+  id: number;
+  user_id: number;
   origin: string;
-  totalDistance: number;
-  distancePerDirection: number;
-  fuelConsumption: number;
-  fuelPrice: number;
-  paytolls: number;
-  roundTrip: string;
-  passengersNum: number;
-  totalTripCost: number;
-  tripCostPerPerson: number;
+  destination: string;
+  distance_km: string;
+  fuel_consumption: string;
+  fuel_price: string;
+  tolls: string;
+  passengers: number;
+  is_round_trip: boolean;
+  total_cost: string;
+  cost_per_person: string;
+  created_at: string;
 }
 
-const initialState: ITripData = {
-  destination: "",
+const initialState: ITripCalcData = {
+  id: 0,
+  user_id: 0,
   origin: "",
-  totalDistance: 0,
-  distancePerDirection: 0,
-  fuelConsumption: 0,
-  fuelPrice: 0,
-  paytolls: 0,
-  roundTrip: "",
-  passengersNum: 0,
-  totalTripCost: 0,
-  tripCostPerPerson: 0,
+  destination: "",
+  distance_km: "",
+  fuel_consumption: "",
+  fuel_price: "",
+  tolls: "",
+  passengers: 0,
+  is_round_trip: false,
+  total_cost: "",
+  cost_per_person: "",
+  created_at: "",
 };
 
 const tripDataSlice = createSlice({
-  name: "tripData",
+  name: "tripCalcData",
   initialState,
   reducers: {
     setTripData: (state, action) => {

@@ -11,10 +11,15 @@ export const loginService = async (
       password,
     });
 
+    const { message, token, user } = response.data;
+
+    console.log(response);
+
     return {
       success: true,
-      message: response.data.message,
-      token: response.data.token,
+      message,
+      token,
+      user,
     };
   } catch (error: any) {
     const { data } = error.response;
@@ -23,14 +28,24 @@ export const loginService = async (
       return {
         success: false,
         message: data.message,
-        token: "",
+        token: null,
+        user: {
+          user_id: null,
+          username: null,
+          user_email: null,
+        },
       };
     }
 
     return {
       success: false,
       message: "Došlo je do greške prilikom logovanja.",
-      token: "",
+      token: null,
+      user: {
+        user_id: null,
+        username: null,
+        user_email: null,
+      },
     };
   }
 };

@@ -1,12 +1,8 @@
 import { Router } from "express";
-import { signUp, login } from "../controllers/authController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { createTrip, ITripRequest } from "../controllers/tripController";
 
 const router = Router();
-
-router.post("/signup", signUp);
-router.post("/login", login);
 
 router.post("/trips", authMiddleware, (req, res) => {
   createTrip(req as ITripRequest, res);

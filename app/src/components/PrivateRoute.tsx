@@ -1,15 +1,14 @@
+import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { RootState } from "../redux/store";
 
 const PrivateRoute = () => {
-  // Provera tokena u localStorage
-  const token = localStorage.getItem("token");
+  const { token } = useSelector((state: RootState) => state.token);
 
-  // Ako nema tokena, preusmeri na /auth
   if (!token) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  // Ako postoji token, prikazi rutu
   return <Outlet />;
 };
 
