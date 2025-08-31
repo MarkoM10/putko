@@ -82,6 +82,68 @@ export const createTrip = async (
       .json({ message: "Uspešno ste kreirali putovanje!", trip });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Greška pri kreiranju putovanja" });
+    return res.status(500).json({ message: "Greška pri kreiranju putovanja." });
+  }
+};
+
+export interface IGetTripsRequest extends Request {
+  user?: {
+    id: number;
+    email: string;
+  };
+}
+
+export const getTrips = async (req: IGetTripsRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Korisnik nije autorizovan." });
+    }
+
+    const trips = await prisma.trips.findMany({
+      where: { user_id: req.user.id },
+      orderBy: { created_at: "desc" },
+    });
+
+    res.status(200).json({ success: true, trips });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Došlo je do greške prilikom učitavanja putovanja.",
+    });
+  }
+};
+
+export const deleteTrip = async (req: IGetTripsRequest, res: Response) => {
+  const { id } = req.params;
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Korisnik nije autorizovan." });
+  }
+
+  try {
+    const trip = await prisma.trips.findFirst({
+      where: {
+        id: Number(id),
+        user_id: req.user.id,
+      },
+    });
+
+    if (!trip) {
+      return res.status(404).json({ message: "Putovanje nije pronađeno." });
+    }
+
+    await prisma.trips.delete({
+      where: { id: trip.id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Putovanje je uspešno obrisano.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Došlo je do greške prilikom brisanja putovanja.",
+    });
   }
 };

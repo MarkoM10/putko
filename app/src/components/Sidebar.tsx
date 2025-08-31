@@ -67,10 +67,10 @@ const Sidebar = () => {
           <span>PDF izveštaji</span>
         </div>
 
-        <div className="flex items-center gap-3 cursor-pointer hover:text-gray-300 transition">
+        {/* <div className="flex items-center gap-3 cursor-pointer hover:text-gray-300 transition">
           <BarChart2 className="w-5 h-5" />
           <span>Statistika</span>
-        </div>
+        </div> */}
       </div>
 
       <div

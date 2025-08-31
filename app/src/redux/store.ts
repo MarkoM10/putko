@@ -6,6 +6,7 @@ import isLoginTabReducer from "./authTab/authTabSlice";
 import alertReducer from "./alert/alertSlice";
 import tokenReducer from "./token/tokenSlice";
 import userReducer from "./user/userSlice";
+import tripIDreducer from "./tripId/tripIdSlice";
 import {
   persistStore,
   persistReducer,
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   alertReducer: alertReducer,
   token: tokenReducer,
   user: userReducer,
+  trip_id: tripIDreducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

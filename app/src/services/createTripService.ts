@@ -6,8 +6,6 @@ export const createTripService = async (
   token: string | null
 ) => {
   try {
-    console.log(tripData);
-
     const response = await axios.post("http://localhost:5000/trips", tripData, {
       headers: {
         Authorization: `Bearer ${token}`,

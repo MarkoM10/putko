@@ -11,7 +11,7 @@ const AlertModal = () => {
 
   return (
     <div className="fixed top-5 inset-x-0 flex justify-center items-center">
-      <div className="w-1/2">
+      <div className="w-[28rem]">
         {show && (
           <>
             {!success && (

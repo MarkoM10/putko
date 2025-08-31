@@ -116,8 +116,6 @@ const TripCalc = () => {
 
     dispatch(showAlert({ success, message }));
 
-    console.log(tripCostsData.trip);
-
     dispatch(setTripData(tripCostsData.trip));
   };
 
@@ -181,8 +179,8 @@ const TripCalc = () => {
       {showReport ? (
         <CalcResult />
       ) : (
-        <div className="formWrapper">
-          <div className="py-4 h-full px-8">
+        <div className="formWrapper flex justify-center items-center">
+          <div className="py-4 px-8 w-full">
             <div className="introTextWrapper mb-2 md:w-3/4">
               <h1 className="text-primary-900 font-josefin text-xl  font-bold mb-2">
                 Kalkulator putnih troškova

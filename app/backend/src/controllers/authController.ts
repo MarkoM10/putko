@@ -16,7 +16,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     if (!user) {
       return res.status(401).json({
-        message: "Korisnik sa unetom email adresom nije pronađen u bazi.",
+        message: "Email adresa nije pronađena.",
       });
     }
 
@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     if (!isValid) {
       return res.status(401).json({
-        message: "Korisnik sa unetom lozinkom nije pronađen u bazi.",
+        message: "Lozinka nije pronađena.",
       });
     }
 
@@ -65,7 +65,7 @@ export const signUp = async (req: Request, res: Response): Promise<any> => {
 
     if (existingUser) {
       return res.status(400).json({
-        message: "Korisnik sa unetom email adresom već postoji u bazi.",
+        message: "Email adresa je već registrovana.",
       });
     }
 
@@ -75,7 +75,7 @@ export const signUp = async (req: Request, res: Response): Promise<any> => {
 
     if (existingUserByUsername) {
       return res.status(400).json({
-        message: "Korisnik sa unetim korisničkim imenom već postoji u bazi.",
+        message: "Korisničko ime je zauzeto.",
       });
     }
 

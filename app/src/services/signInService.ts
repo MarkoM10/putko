@@ -12,12 +12,13 @@ export const signInService = async (
       email,
     });
 
-    const { message, token } = response.data;
+    const { message, token, user } = response.data;
 
     return {
       success: true,
       message,
       token,
+      user,
     };
   } catch (error: any) {
     const { data } = error.response;
@@ -27,6 +28,11 @@ export const signInService = async (
         success: false,
         message: data.message,
         token: null,
+        user: {
+          user_email: null,
+          user_id: null,
+          username: null,
+        },
       };
     }
 
@@ -34,6 +40,11 @@ export const signInService = async (
       success: false,
       message: "Došlo je do greške prilikom registracije.",
       token: null,
+      user: {
+        user_email: null,
+        user_id: null,
+        username: null,
+      },
     };
   }
 };

@@ -8,6 +8,7 @@ import { signInService } from "../services/signInService";
 import { useNavigate } from "react-router-dom";
 import { showAlert } from "../redux/alert/alertSlice";
 import { setToken } from "../redux/token/tokenSlice";
+import { setUser } from "../redux/user/userSlice";
 
 const SignInForm = () => {
   const dispatch = useDispatch();
@@ -49,12 +50,19 @@ const SignInForm = () => {
     const result = await signInService(signInFormData);
     dispatch(hideSpinner());
 
-    const { message, success, token } = result;
+    const { message, success, token, user } = result;
 
     dispatch(setToken(token));
     dispatch(showAlert({ success, message }));
 
     if (success) {
+      dispatch(
+        setUser({
+          user_id: user.user_id,
+          username: user.username,
+          user_email: user.user_email,
+        })
+      );
       navigate("/home");
     }
   };
