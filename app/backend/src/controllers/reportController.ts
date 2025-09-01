@@ -11,7 +11,6 @@ export interface IReportRequest extends Request {
   user?: { id: number };
 }
 
-// Kreiranje PDF i čuvanje u folder + zapis u bazi
 export const createReport = async (req: IReportRequest, res: Response) => {
   try {
     const { trip_id } = req.body;
@@ -24,7 +23,6 @@ export const createReport = async (req: IReportRequest, res: Response) => {
     if (!trip)
       return res.status(404).json({ message: "Putovanje nije pronađeno." });
 
-    // Folder gde se čuvaju PDF fajlovi
     const reportsDir = path.join(__dirname, "../../reports/files");
     if (!fs.existsSync(reportsDir))
       fs.mkdirSync(reportsDir, { recursive: true });
@@ -33,14 +31,13 @@ export const createReport = async (req: IReportRequest, res: Response) => {
     const filePath = path.join(reportsDir, fileName);
     const fileUrl = `/reports/files/${fileName}`;
 
-    // Generisanje PDF-a
     const doc = new PDFDocument();
     const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
     doc
       .fontSize(18)
-      .fillColor("#3AAFA9")
+      .fillColor("#1d5855")
       .text("Pregled putnih troškova", { align: "center" });
     doc.moveDown();
     doc.fontSize(14).fillColor("black");
@@ -65,8 +62,10 @@ export const createReport = async (req: IReportRequest, res: Response) => {
       )})`
     );
     doc.text(
-      `Cena po osobi: ${trip.cost_per_person} RSD (€${euroConversion(
-        Number(trip.cost_per_person)
+      `Cena po osobi: ${
+        trip.cost_per_person ? trip.cost_per_person : trip.total_cost
+      } RSD (€${euroConversion(
+        Number(trip.cost_per_person ? trip.cost_per_person : trip.total_cost)
       )})`
     );
     doc.end();
@@ -82,7 +81,6 @@ export const createReport = async (req: IReportRequest, res: Response) => {
       res.download(filePath, fileName);
     });
   } catch (error) {
-    console.error(error);
     res
       .status(500)
       .json({ message: "Serverska greška! Molimo Vas pokušajte kasnije." });

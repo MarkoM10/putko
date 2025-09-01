@@ -3,25 +3,26 @@ import { RootState } from "../redux/store";
 import { useEffect, useState } from "react";
 import { getTripsService } from "../services/getTripsService";
 import { ITrip } from "../interfaces/interfaces";
-import { Heart, Pencil, Trash2 } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import { setModal } from "../redux/modal/modalSlice";
 import { setTripID } from "../redux/tripId/tripIdSlice";
 import { getFavoritesService } from "../services/getFavoritesService";
-import { deleteFromFavoritesService } from "../services/deleteFromFavoriteService";
+import { showAlert } from "../redux/alert/alertSlice";
 
 const Trips = () => {
+  //Redux store
   const { token } = useSelector((state: RootState) => state.token);
+
+  //States
   const [trips, setTrips] = useState<ITrip[]>([]);
   const [favoritedTripIds, setFavoritedTripIds] = useState<number[]>([]);
-  const [favoritesChanged, setFavoritesChanged] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<
-    "total_cost" | "distance_km" | "passengers"
-  >("total_cost");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  //Hooks
   const dispatch = useDispatch();
 
+  //Fetching trips
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
@@ -32,12 +33,17 @@ const Trips = () => {
         );
         setFavoritedTripIds(tripIds);
       } catch (error) {
-        console.error("Failed to fetch favorites:", error);
+        dispatch(
+          showAlert({
+            success: false,
+            message: "Neuspešno izlistavanje putovanja.",
+          })
+        );
       }
     };
 
     if (token) fetchFavorites();
-  }, [token, favoritesChanged]);
+  }, [favoritedTripIds]);
 
   useEffect(() => {
     const fetchTrips = async () => {
@@ -50,7 +56,7 @@ const Trips = () => {
     };
 
     if (token) fetchTrips();
-  }, [token, trips]);
+  }, [token, favoritedTripIds]);
 
   const handleAddToFavorites = async (tripId: number) => {
     if (favoritedTripIds.includes(tripId)) {
@@ -64,7 +70,6 @@ const Trips = () => {
         })
       );
       setFavoritedTripIds((prev) => prev.filter((id) => id !== tripId));
-      setFavoritesChanged((prev) => !prev);
     } else {
       dispatch(setTripID(tripId));
       dispatch(
@@ -74,7 +79,6 @@ const Trips = () => {
           isOpen: true,
         })
       );
-      setFavoritesChanged((prev) => !prev);
     }
   };
 
@@ -91,7 +95,7 @@ const Trips = () => {
   };
 
   return (
-    <div className="max-w-6xl">
+    <div className="w-[24rem] sm:w-[42rem] md:w-full max-w-6xl">
       <div className="p-4">
         <div className="tripsHeadersWrapper">
           <h1 className="text-2xl font-bold mb-4 text-primary-900">
@@ -104,8 +108,8 @@ const Trips = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="px-4 py-2 border rounded-lg text-sm w-full sm:w-1/2"
+              maxLength={255}
             />
-
             <button
               onClick={() =>
                 setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
@@ -122,7 +126,7 @@ const Trips = () => {
           </div>
         ) : (
           <div className="relative shadow-md sm:rounded-3xl overflow-hidden">
-            <table className="w-full text-sm text-white table-fixed text-center">
+            <table className="text-sm text-white table-fixed text-center">
               <thead className="text-xs font-josefin text-white uppercase bg-primary-900 sticky top-0 z-10">
                 <tr>
                   <th
@@ -187,7 +191,7 @@ const Trips = () => {
             </table>
 
             <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
-              <table className="w-full text-sm text-center text-gray-500 table-fixed border-separate">
+              <table className="text-sm text-center text-gray-500 table-fixed border-separate">
                 <tbody>
                   {trips
                     .filter((trip) =>
@@ -200,7 +204,7 @@ const Trips = () => {
                         ? Number(a.total_cost) - Number(b.total_cost)
                         : Number(b.total_cost) - Number(a.total_cost)
                     )
-                    .map((trip, index) => (
+                    .map((trip) => (
                       <tr
                         key={trip.id}
                         className="bg-white border-b hover:bg-gray-50"
@@ -228,7 +232,9 @@ const Trips = () => {
                           {trip.total_cost}
                         </td>
                         <td className="w-[12.5%] px-4 py-3 font-semibold">
-                          {trip.cost_per_person}
+                          {trip.cost_per_person
+                            ? trip.cost_per_person
+                            : trip.total_cost}
                         </td>
                         <td className="w-[10%] px-4 py-3">
                           <div className="flex">

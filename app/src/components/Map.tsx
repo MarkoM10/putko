@@ -14,7 +14,6 @@ const Map = () => {
   );
 
   const { showCalc } = useSelector((state: RootState) => state.show_calc);
-
   const distance_n = Number(distance_km);
 
   const [directions, setDirections] =
@@ -23,12 +22,11 @@ const Map = () => {
   //Rendering distance between origin and destination
   useEffect(() => {
     if (!origin || !destination || distance_n <= 0) {
-      setDirections(null); // ✅ očisti mapu ako podaci nisu validni
+      setDirections(null);
       return;
     }
 
     const directionsService = new google.maps.DirectionsService();
-
     directionsService.route(
       {
         origin,

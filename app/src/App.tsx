@@ -14,7 +14,7 @@ import Modal from "./components/Modal";
 function App() {
   return (
     <Router>
-      <div className="rootWrapper  bg-background min-h-screen bg-center">
+      <div className="rootWrapper bg-[url(./images/bg.jpg)] bg-background min-h-screen bg-center bg-cover">
         <AlertModal />
         <Spinner />
         <Modal />

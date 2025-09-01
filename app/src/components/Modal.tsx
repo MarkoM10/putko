@@ -90,14 +90,6 @@ export default function Modal() {
     if (message !== undefined && success !== undefined) {
       dispatch(showAlert({ success, message }));
       dispatch(closeModal());
-
-      if (success && type === "GENERATE_PDF_MODAL") {
-        navigate("reports");
-      }
-
-      // if (success && type === "ADD_TO_FAVORITES_MODAL") {
-      //   navigate("favorites");
-      // }
     }
   };
 
@@ -109,7 +101,7 @@ export default function Modal() {
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+          <div className="bg-white rounded-2xl shadow-xl w-11/12 max-w-md p-6 relative">
             <h2 className="text-xl font-semibold text-primary-900">
               Potvrda akcije
             </h2>

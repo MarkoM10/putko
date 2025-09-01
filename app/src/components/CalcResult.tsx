@@ -69,7 +69,7 @@ const CalcResult = () => {
           </div>
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
             <p className="text-sm text-gray-500">Broj putnika</p>
-            <p className="text-lg font-semibold">{passengers || 1}</p>
+            <p className="text-lg font-semibold">{passengers}</p>
           </div>
         </div>
 
@@ -83,8 +83,10 @@ const CalcResult = () => {
           <div className="flex justify-between">
             <p className="text-lg font-medium">Cena po osobi</p>
             <p className="text-lg font-bold">
-              {cost_per_person} RSD / €
-              {Math.round(Number(cost_per_person) / 117)}
+              {cost_per_person ? cost_per_person : total_cost} RSD / €
+              {Math.round(
+                Number(cost_per_person ? cost_per_person : total_cost) / 117
+              )}
             </p>
           </div>
         </div>
@@ -99,12 +101,12 @@ const CalcResult = () => {
                 })
               )
             }
-            className="text-white bg-primary-900 hover:bg-primary-800 font-medium rounded-lg text-sm px-5 py-2.5 my-2 w-full"
+            className="text-white bg-primary-900 hover:bg-primary-800 font-medium rounded-lg text-sm px-5 py-2.5 mt-2 w-full"
           >
             Generiši PDF
           </button>
           <button
-            className="text-primary-900 bg-neutral-400 hover:bg-neutral-100 font-medium rounded-lg text-sm px-5 py-2.5 my-2 w-full"
+            className="text-primary-900 bg-neutral-400 hover:bg-neutral-100 font-medium rounded-lg text-sm px-5 py-2.5 mt-2 w-full"
             onClick={() => {
               localStorage.removeItem("lastReport");
               dispatch(showCalcReport(null));

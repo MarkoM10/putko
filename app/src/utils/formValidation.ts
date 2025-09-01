@@ -1,35 +1,50 @@
 //Form validation
-export const handleFormValidation = (value: string, name: string) => {
-  let validate = false;
+import { TripFormData } from "../interfaces/interfaces";
 
-  switch (name) {
-    case "fuelConsumption":
-      value === "" || Number(value) > 30 || Number(value) < 1
-        ? (validate = false)
-        : (validate = true);
-      return validate;
-    case "fuelPrice":
-      value === "" || Number(value) > 500 || Number(value) < 30
-        ? (validate = false)
-        : (validate = true);
-      return validate;
-    case "paytolls":
-      value === "" || Number(value) > 10000 || Number(value) < 50
-        ? (validate = false)
-        : (validate = true);
-      return validate;
-    case "passengersNum":
-      value === "" || Number(value) > 100 || Number(value) < 0
-        ? (validate = false)
-        : (validate = true);
-      return validate;
-    case "roundTrip":
-      value === "" ? (validate = false) : (validate = true);
-      return validate;
+export const handleTripCalcFormValidation = (
+  origin: string,
+  destination: string,
+  formData: TripFormData
+): { isValid: boolean; errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
 
-    default:
-      return validate;
+  // Origin & Destination
+  if (!origin || origin.trim() === "") {
+    errors.origin = "Polazna tačka je obavezna.";
   }
+
+  if (!destination || destination.trim() === "") {
+    errors.destination = "Odredišna tačka je obavezna.";
+  }
+
+  // Fuel Consumption (required)
+  if (formData.fuelConsumption === 0) {
+    errors.fuelConsumption = "Potrošnja je obavezna.";
+  } else if (formData.fuelConsumption < 0 || formData.fuelConsumption > 30) {
+    errors.fuelConsumption = "Potrošnja mora biti između 1 i 30 litara.";
+  }
+
+  // Fuel Price (required)
+  if (formData.fuelPrice === 0) {
+    errors.fuelPrice = "Cena goriva je obavezna.";
+  } else if (formData.fuelPrice < 0 || formData.fuelPrice > 400) {
+    errors.fuelPrice = "Cena goriva mora biti između 1 i 400 RSD.";
+  }
+
+  // Tolls (optional)
+  if (formData.paytolls < 0 || formData.paytolls > 10000) {
+    errors.paytolls = "Putarine moraju biti između 0 i 10.000 RSD.";
+  }
+
+  // Passengers (optional)
+  if (formData.passengersNum < 0 || formData.passengersNum > 50) {
+    errors.passengersNum = "Broj putnika mora biti između 0 i 50.";
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
 };
 
 export const handleSignInFormValidation = (formData: {

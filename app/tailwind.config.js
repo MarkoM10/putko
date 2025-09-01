@@ -47,7 +47,7 @@ module.exports = {
         900: "#631818",
       },
       neutral: {
-        100: "#f0f2f4",
+        100: "#fff",
         200: "#dde1e5",
         300: "#d3d8de",
         400: "#ced4da",

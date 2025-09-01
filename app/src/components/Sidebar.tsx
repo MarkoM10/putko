@@ -72,7 +72,6 @@ const Sidebar = () => {
           <span>Statistika</span>
         </div> */}
       </div>
-
       <div
         onClick={() => handleLogout()}
         className="flex items-center gap-3 cursor-pointer hover:text-gray-300 transition mt-8"

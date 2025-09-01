@@ -1,10 +1,11 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useEffect, useState } from "react";
 import { IReport } from "../interfaces/interfaces";
 import { getReportsService } from "../services/getReportsService";
 import dayjs from "dayjs";
 import { Eye, FileDown } from "lucide-react";
+import { showAlert } from "../redux/alert/alertSlice";
 
 const Reports = () => {
   const { token } = useSelector((state: RootState) => state.token);
@@ -12,13 +13,20 @@ const Reports = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchReports = async () => {
       try {
         const response = await getReportsService(token);
         setReports(response.reports);
       } catch (error) {
-        console.error(error);
+        dispatch(
+          showAlert({
+            success: false,
+            message: "Neuspešno izlistavanje izveštaja.",
+          })
+        );
       }
     };
 
@@ -26,7 +34,7 @@ const Reports = () => {
   }, [token]);
 
   return (
-    <div className="max-w-7xl">
+    <div className="w-[26rem] sm:w-[42rem] md:w-full max-w-7xl">
       <div className="p-4">
         <div className="pdfHeadersWrapper">
           <h1 className="text-2xl font-bold mb-4 text-primary-900">
@@ -39,6 +47,7 @@ const Reports = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="px-4 py-2 border rounded-lg text-sm w-full sm:w-1/2"
+              maxLength={255}
             />
 
             <button
@@ -58,7 +67,7 @@ const Reports = () => {
           </div>
         ) : (
           <div className="relative shadow-md sm:rounded-3xl overflow-hidden">
-            <table className="w-full text-sm text-center text-white table-fixed">
+            <table className="sm:w-full text-sm text-center text-white table-fixed">
               <thead className="text-xs font-josefin text-white uppercase bg-primary-900 sticky top-0 z-10">
                 <tr>
                   <th className="w-[10%] px-6 py-3">ID</th>
@@ -69,7 +78,7 @@ const Reports = () => {
               </thead>
             </table>
             <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
-              <table className="w-full text-sm text-center text-gray-500 dark:text-gray-400 table-fixed border-separate">
+              <table className="sm:w-full text-sm text-center text-gray-500 dark:text-gray-400 table-fixed border-separate">
                 <tbody>
                   {reports
                     .filter((report) =>

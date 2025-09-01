@@ -5,7 +5,5 @@ export const getFavoritesService = async (token: string | null) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  console.log(response.data, "test");
-
   return response.data;
 };

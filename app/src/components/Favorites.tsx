@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -6,6 +6,7 @@ import { Pencil } from "lucide-react";
 import { IFavoriteRoute } from "../interfaces/interfaces";
 import { getFavoritesService } from "../services/getFavoritesService";
 import { updateFavoriteAliasService } from "../services/updateFavoriteAliasService";
+import { showAlert } from "../redux/alert/alertSlice";
 
 const Favorites = () => {
   const { token } = useSelector((state: RootState) => state.token);
@@ -14,14 +15,21 @@ const Favorites = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [editingAliasId, setEditingAliasId] = useState<number | null>(null);
   const [editedAlias, setEditedAlias] = useState("");
+  const dispatch = useDispatch();
 
+  //Fetching favorite trips based on token (user_id)
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const response = await getFavoritesService(token);
         setFavorites(response.favorites);
       } catch (error) {
-        console.error(error);
+        dispatch(
+          showAlert({
+            success: false,
+            message: "Neuspešno izlistavanje omiljenih ruta.",
+          })
+        );
       }
     };
 
@@ -29,7 +37,7 @@ const Favorites = () => {
   }, [token]);
 
   return (
-    <div className="max-w-7xl">
+    <div className="w-[26rem] sm:w-[42rem] md:w-full max-w-7xl">
       <div className="p-4">
         <div className="favoritesHeadersWrapper">
           <h1 className="text-2xl font-bold mb-4 text-primary-900">
@@ -38,12 +46,12 @@ const Favorites = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <input
               type="text"
-              placeholder="Pretraži destinaciju..."
+              placeholder="Pretraži omiljenu rutu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="px-4 py-2 border rounded-lg text-sm w-full sm:w-1/2"
+              maxLength={255}
             />
-
             <button
               onClick={() =>
                 setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
@@ -60,7 +68,7 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="relative shadow-md sm:rounded-3xl overflow-hidden">
-            <table className="w-full text-sm text-center text-white table-fixed">
+            <table className="sm:w-full text-sm text-center text-white table-fixed">
               <thead className="text-xs font-josefin text-white uppercase bg-primary-900 sticky top-0 z-10">
                 <tr>
                   <th className="w-[10%] px-6 py-3">ID</th>
@@ -72,7 +80,7 @@ const Favorites = () => {
               </thead>
             </table>
             <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
-              <table className="w-full text-sm text-center text-gray-500 table-fixed border-separate">
+              <table className="sm:w-full text-sm text-center text-gray-500 table-fixed border-separate">
                 <tbody>
                   {favorites
                     .filter((fav) =>

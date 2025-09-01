@@ -26,7 +26,7 @@ export const addToFavoritesService = async (
   } catch (error) {
     return {
       success: false,
-      message: "Greška pri generisanju PDF-a.",
+      message: "Greška pri dodavanju putovanja u omiljene.",
     };
   }
 };
