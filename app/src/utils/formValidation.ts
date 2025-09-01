@@ -32,32 +32,52 @@ export const handleFormValidation = (value: string, name: string) => {
   }
 };
 
-export const handleSignInFormValidation = (
-  value: string,
-  name: string,
-  compareValue?: string
-): boolean => {
-  let validate = false;
+export const handleSignInFormValidation = (formData: {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}): { isValid: boolean; errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
 
-  switch (name) {
-    case "username":
-      validate = value.trim() !== "" && value.length >= 3 && value.length <= 20;
-      return validate;
-
-    case "email":
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      validate = emailRegex.test(value);
-      return validate;
-
-    case "password":
-      validate = value.trim() !== "" && value.length >= 6;
-      return validate;
-
-    case "confirmPassword":
-      validate = value === compareValue && value.trim() !== "";
-      return validate;
-
-    default:
-      return validate;
+  if (!formData.username || formData.username.length < 3) {
+    errors.username = "Korisničko ime mora imati najmanje 3 karaktera.";
   }
+
+  if (!formData.email || !formData.email.includes("@")) {
+    errors.email = "Email nije validan.";
+  }
+
+  if (!formData.password || formData.password.length < 6) {
+    errors.password = "Lozinka mora imati najmanje 6 karaktera.";
+  }
+
+  if (formData.confirmPassword !== formData.password) {
+    errors.confirmPassword = "Lozinke se ne poklapaju.";
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
+};
+
+export const validateLoginForm = (
+  email: string,
+  password: string
+): { isValid: boolean; errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
+
+  if (!email || !email.includes("@")) {
+    errors.email = "Email nije validan.";
+  }
+
+  if (!password || password.length < 6) {
+    errors.password = "Lozinka mora imati najmanje 6 karaktera.";
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
 };

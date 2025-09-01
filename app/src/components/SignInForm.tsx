@@ -11,31 +11,24 @@ import { setToken } from "../redux/token/tokenSlice";
 import { setUser } from "../redux/user/userSlice";
 
 const SignInForm = () => {
+  //Hooks
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  //States
   const [signInFormData, setSignInFormData] = useState<ISignInFormData>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [validationState, setValidationState] = useState<
-    Record<string, boolean>
-  >({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
+  //Getting user input and setting it into state object
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { value, name } = e.target;
-    const isValid =
-      name === "confirmPassword"
-        ? handleSignInFormValidation(value, name, signInFormData.password)
-        : handleSignInFormValidation(value, name);
-
-    setValidationState((prev) => ({
-      ...prev,
-      [name]: isValid,
-    }));
 
     setSignInFormData((prev) => ({
       ...prev,
@@ -43,32 +36,39 @@ const SignInForm = () => {
     }));
   };
 
+  //Handling form submission
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    dispatch(showSpinner());
-    const result = await signInService(signInFormData);
-    dispatch(hideSpinner());
+    const { isValid, errors } = handleSignInFormValidation(signInFormData);
+    setFormErrors(errors);
 
-    const { message, success, token, user } = result;
+    //If input validation is successful sign in request is made
+    if (isValid) {
+      dispatch(showSpinner());
+      const result = await signInService(signInFormData);
+      dispatch(hideSpinner());
+      const { message, success, token, user } = result;
+      //Displaying result of request
+      dispatch(showAlert({ success, message }));
 
-    dispatch(setToken(token));
-    dispatch(showAlert({ success, message }));
-
-    if (success) {
-      dispatch(
-        setUser({
-          user_id: user.user_id,
-          username: user.username,
-          user_email: user.user_email,
-        })
-      );
-      navigate("/home");
+      //If request is successful, token and user are set, user is navigated to the home page
+      if (success) {
+        dispatch(setToken(token));
+        dispatch(
+          setUser({
+            user_id: user.user_id,
+            username: user.username,
+            user_email: user.user_email,
+          })
+        );
+        navigate("/home");
+      }
     }
   };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
+    <form onSubmit={(e) => handleSubmit(e)} className="space-y-4" noValidate>
       <h1 className="text-primary-900 font-josefin text-2xl  font-bold  text-center">
         Kreiraj nalog
       </h1>
@@ -83,6 +83,9 @@ const SignInForm = () => {
           required
           onChange={handleInputChange}
         />
+        {formErrors.username && (
+          <p className="text-danger-400 text-sm mt-1">{formErrors.username}</p>
+        )}
       </div>
 
       <div>
@@ -96,6 +99,9 @@ const SignInForm = () => {
           required
           onChange={handleInputChange}
         />
+        {formErrors.email && (
+          <p className="text-danger-400 text-sm mt-1">{formErrors.email}</p>
+        )}
       </div>
 
       <div>
@@ -109,6 +115,9 @@ const SignInForm = () => {
           required
           onChange={handleInputChange}
         />
+        {formErrors.password && (
+          <p className="text-danger-400 text-sm mt-1">{formErrors.password}</p>
+        )}
       </div>
 
       <div>
@@ -122,6 +131,11 @@ const SignInForm = () => {
           required
           onChange={handleInputChange}
         />
+        {formErrors.confirmPassword && (
+          <p className="text-danger-400 text-sm mt-1">
+            {formErrors.confirmPassword}
+          </p>
+        )}
       </div>
 
       <button

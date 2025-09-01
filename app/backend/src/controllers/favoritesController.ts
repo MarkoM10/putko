@@ -110,3 +110,27 @@ export const deleteFavorite = async (req: IFavoritesRequest, res: Response) => {
     });
   }
 };
+
+export const updateFavoriteAlias = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { id } = req.params;
+  const { alias } = req.body;
+
+  if (!alias || alias.trim() === "") {
+    return res.status(400).json({ message: "Alias ne može biti prazan." });
+  }
+
+  try {
+    const updated = await prisma.favorite_routes.update({
+      where: { id: Number(id) },
+      data: { alias },
+    });
+
+    res.status(200).json({ success: true, favorite: updated });
+  } catch (error) {
+    console.error("Greška pri ažuriranju aliasa:", error);
+    res.status(500).json({ message: "Greška na serveru." });
+  }
+};

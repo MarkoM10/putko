@@ -9,20 +9,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { ITripCalcData } from "../redux/tripCalculationData/tripCalculationDataSlice";
 const Map = () => {
-  const {
-    origin,
-    destination,
-    distance_km,
-    fuel_consumption,
-    fuel_price,
-    tolls,
-    passengers,
-    is_round_trip,
-    total_cost,
-    cost_per_person,
-  } = useSelector(
+  const { origin, destination, distance_km } = useSelector(
     (state: { tripCalcData: ITripCalcData }) => state.tripCalcData
   );
+
+  const { showCalc } = useSelector((state: RootState) => state.show_calc);
 
   const distance_n = Number(distance_km);
 
@@ -31,29 +22,33 @@ const Map = () => {
 
   //Rendering distance between origin and destination
   useEffect(() => {
-    if (distance_n > 0) {
-      const directionsService = new google.maps.DirectionsService();
-
-      directionsService.route(
-        {
-          origin: origin,
-          destination: destination,
-          travelMode: google.maps.TravelMode.DRIVING,
-        },
-        (result, status) => {
-          if (status === google.maps.DirectionsStatus.OK && result) {
-            setDirections(result);
-          } else {
-            console.error("Error fetching directions:", status);
-          }
-        }
-      );
+    if (!origin || !destination || distance_n <= 0) {
+      setDirections(null); // ✅ očisti mapu ako podaci nisu validni
+      return;
     }
-  }, [origin]);
+
+    const directionsService = new google.maps.DirectionsService();
+
+    directionsService.route(
+      {
+        origin,
+        destination,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK && result) {
+          setDirections(result);
+        } else {
+          console.error("Greška pri generisanju rute:", status);
+          setMarkerPosition(center);
+          setDirections(null);
+        }
+      }
+    );
+  }, [origin, destination, distance_n]);
 
   //Setting Marker starting position to be in Belgrade
   const center = { lat: 44.7866, lng: 20.4489 };
-
   const [markerPosition, setMarkerPosition] = useState(center);
 
   //Loading Google map

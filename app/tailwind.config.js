@@ -46,6 +46,17 @@ module.exports = {
         800: "#761d1d",
         900: "#631818",
       },
+      neutral: {
+        100: "#f0f2f4",
+        200: "#dde1e5",
+        300: "#d3d8de",
+        400: "#ced4da",
+        500: "#a5aaae",
+        600: "#7c7f83",
+        700: "#525557",
+        800: "#151516",
+        900: "#000000",
+      },
     },
     fontFamily: {
       josefin: ["Josefin Sans", "serif"],

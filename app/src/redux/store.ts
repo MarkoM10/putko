@@ -7,6 +7,7 @@ import alertReducer from "./alert/alertSlice";
 import tokenReducer from "./token/tokenSlice";
 import userReducer from "./user/userSlice";
 import tripIDreducer from "./tripId/tripIdSlice";
+import showCalcReducer from "./calcReport/calcReportSlice";
 import {
   persistStore,
   persistReducer,
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   token: tokenReducer,
   user: userReducer,
   trip_id: tripIDreducer,
+  show_calc: showCalcReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

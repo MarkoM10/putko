@@ -2,13 +2,18 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { IFavoriteRoute } from "../interfaces/interfaces";
 import { getFavoritesService } from "../services/getFavoritesService";
+import { updateFavoriteAliasService } from "../services/updateFavoriteAliasService";
 
 const Favorites = () => {
   const { token } = useSelector((state: RootState) => state.token);
   const [favorites, setFavorites] = useState<IFavoriteRoute[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [editingAliasId, setEditingAliasId] = useState<number | null>(null);
+  const [editedAlias, setEditedAlias] = useState("");
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -30,9 +35,24 @@ const Favorites = () => {
           <h1 className="text-2xl font-bold mb-4 text-primary-900">
             Omiljene rute
           </h1>
-          <p className="text-gray-600 mb-6">
-            Pregled svih sačuvanih omiljenih putovanja
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <input
+              type="text"
+              placeholder="Pretraži destinaciju..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-4 py-2 border rounded-lg text-sm w-full sm:w-1/2"
+            />
+
+            <button
+              onClick={() =>
+                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+              }
+              className="px-4 py-2 bg-primary-900 text-white rounded-lg text-sm hover:bg-primary-800 transition"
+            >
+              Sortiraj po datumu: {sortOrder === "asc" ? "↑" : "↓"}
+            </button>
+          </div>
         </div>
         {favorites.length === 0 ? (
           <div className="text-center text-gray-500 py-10 border rounded-3xl">
@@ -40,67 +60,88 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="relative shadow-md sm:rounded-3xl overflow-hidden">
-            <table className="w-full text-sm text-left text-white table-fixed">
+            <table className="w-full text-sm text-center text-white table-fixed">
               <thead className="text-xs font-josefin text-white uppercase bg-primary-900 sticky top-0 z-10">
                 <tr>
-                  <th className="w-8 p-4">
-                    <div className="flex items-center">
-                      <input
-                        id="checkbox-all-favorites"
-                        type="checkbox"
-                        className="w-4 h-4 text-primary-900 bg-gray-100 border-gray-300 rounded-sm"
-                      />
-                      <label
-                        htmlFor="checkbox-all-favorites"
-                        className="sr-only"
-                      >
-                        checkbox
-                      </label>
-                    </div>
-                  </th>
-                  <th className="w-8 px-6 py-3">ID</th>
-                  <th className="w-[180px] px-6 py-3">Polazak</th>
-                  <th className="w-[180px] px-6 py-3">Destinacija</th>
-                  <th className="w-[160px] px-6 py-3">Alias</th>
-                  <th className="w-[160px] px-6 py-3">Datum dodavanja</th>
+                  <th className="w-[10%] px-6 py-3">ID</th>
+                  <th className="w-[25%] px-6 py-3">Polazak</th>
+                  <th className="w-[25%] px-6 py-3">Destinacija</th>
+                  <th className="w-[20%] px-6 py-3">Alias</th>
+                  <th className="w-[20%] px-6 py-3">Datum dodavanja</th>
                 </tr>
               </thead>
             </table>
-
             <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
-              <table className="w-full text-sm text-left text-gray-500 table-fixed border-separate">
+              <table className="w-full text-sm text-center text-gray-500 table-fixed border-separate">
                 <tbody>
-                  {favorites.map((fav, index) => (
-                    <tr
-                      key={fav.id}
-                      className="bg-white border-b hover:bg-gray-50"
-                    >
-                      <td className="w-8 p-4">
-                        <div className="flex items-center">
-                          <input
-                            id={`checkbox-fav-${fav.id}`}
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500"
-                          />
-                          <label
-                            htmlFor={`checkbox-fav-${fav.id}`}
-                            className="sr-only"
-                          >
-                            checkbox
-                          </label>
-                        </div>
-                      </td>
-                      <td className="w-8 px-6 py-4 font-medium whitespace-nowrap">
-                        {index + 1}
-                      </td>
-                      <td className="w-[180px] px-6 py-4">{fav.origin}</td>
-                      <td className="w-[180px] px-6 py-4">{fav.destination}</td>
-                      <td className="w-[160px] px-6 py-4">{fav.alias}</td>
-                      <td className="w-[160px] px-6 py-4">
-                        {dayjs(fav.created_at).format("DD. MMM YYYY, HH:mm")}
-                      </td>
-                    </tr>
-                  ))}
+                  {favorites
+                    .filter((fav) =>
+                      fav.destination
+                        ?.toLowerCase()
+                        .includes(searchQuery.toLowerCase())
+                    )
+                    .sort((a, b) => {
+                      const aDate = new Date(a.created_at).getTime();
+                      const bDate = new Date(b.created_at).getTime();
+                      return sortOrder === "asc"
+                        ? aDate - bDate
+                        : bDate - aDate;
+                    })
+                    .map((fav) => (
+                      <tr
+                        key={fav.id}
+                        className="bg-white border-b hover:bg-gray-50"
+                      >
+                        <td className="w-[10%] px-6 py-4 font-medium whitespace-nowrap">
+                          {fav.id}
+                        </td>
+                        <td className="w-[25%] px-6 py-4">{fav.origin}</td>
+                        <td className="w-[25%] px-6 py-4">{fav.destination}</td>
+                        <td className="w-[20%] px-6 py-4">
+                          {editingAliasId === fav.id ? (
+                            <input
+                              type="text"
+                              value={editedAlias}
+                              onChange={(e) => setEditedAlias(e.target.value)}
+                              onBlur={async () => {
+                                const result = await updateFavoriteAliasService(
+                                  token,
+                                  fav.id,
+                                  editedAlias
+                                );
+                                if (result.success) {
+                                  setFavorites((prev) =>
+                                    prev.map((f) =>
+                                      f.id === fav.id
+                                        ? { ...f, alias: editedAlias }
+                                        : f
+                                    )
+                                  );
+                                }
+                                setEditingAliasId(null);
+                              }}
+                              className="px-2 py-1 border rounded-md text-sm w-full"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-between gap-2">
+                              <span>{fav.alias}</span>
+                              <button
+                                onClick={() => {
+                                  setEditingAliasId(fav.id);
+                                  setEditedAlias(fav.alias || "");
+                                }}
+                                className="text-blue-600 hover:text-blue-800 transition"
+                              >
+                                <Pencil size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                        <td className="w-[20%] px-6 py-4">
+                          {dayjs(fav.created_at).format("DD. MMM YYYY, HH:mm")}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

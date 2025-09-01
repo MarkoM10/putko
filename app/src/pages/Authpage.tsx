@@ -12,7 +12,7 @@ const Authpage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="authWrapper w-full max-w-md p-12 bg-white rounded-xl shadow-lg">
+      <div className="authWrapper w-11/12 max-w-md p-12 bg-white rounded-xl shadow-lg">
         <div className="flex justify-center"></div>
         {isLoginTab ? <LoginForm /> : <SignInForm />}
       </div>

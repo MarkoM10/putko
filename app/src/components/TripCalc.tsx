@@ -1,5 +1,5 @@
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import React from "react";
 import { ITripData, TripFormData } from "../interfaces/interfaces";
@@ -10,10 +10,11 @@ import { RootState } from "../redux/store";
 import { showAlert } from "../redux/alert/alertSlice";
 import { setTripData } from "../redux/tripCalculationData/tripCalculationDataSlice";
 import CalcResult from "./CalcResult";
+import { Link } from "react-router-dom";
+import logo from "../images/putko.png";
+import { showCalcReport } from "../redux/calcReport/calcReportSlice";
 
 const TripCalc = () => {
-  //Hooks
-
   //States
   const dispatch = useDispatch();
   const [origin, setOrigin] = useState<string>(""); //origin cordinates
@@ -32,7 +33,8 @@ const TripCalc = () => {
   const [validationState, setValidationState] = useState<
     Record<string, boolean>
   >({});
-  const [showReport, setShowReport] = useState(false);
+
+  const { showCalc } = useSelector((state: RootState) => state.show_calc);
 
   //Redux
   const { token } = useSelector((state: RootState) => state.token);
@@ -108,9 +110,8 @@ const TripCalc = () => {
 
     const tripCostsData = await createTripService(tripData, token);
 
-    tripCostsData && setShowReport(true);
+    tripCostsData && dispatch(showCalcReport(true));
     dispatch(hideSpinner());
-    console.log(tripCostsData.trip);
 
     const { success, message } = tripCostsData;
 
@@ -172,17 +173,29 @@ const TripCalc = () => {
     },
   ];
 
+  useEffect(() => {
+    const savedReport = localStorage.getItem("lastReport");
+    if (savedReport) {
+      showCalcReport(JSON.parse(savedReport));
+    }
+  }, []);
+
   if (!isLoaded) return <div>Loading Google maps...</div>;
 
   return (
     <>
-      {showReport ? (
+      {showCalc ? (
         <CalcResult />
       ) : (
-        <div className="formWrapper flex justify-center items-center">
-          <div className="py-4 px-8 w-full">
+        <div className="formWrapper flex justify-center">
+          <div className="p-4 w-full">
+            <div className="pb-8 pt-4">
+              <Link to="/home">
+                <img src={logo} alt="putko logotip" className="w-24" />
+              </Link>
+            </div>
             <div className="introTextWrapper mb-2 md:w-3/4">
-              <h1 className="text-primary-900 font-josefin text-xl  font-bold mb-2">
+              <h1 className="text-primary-900 font-josefin text-2xl  font-bold mb-2">
                 Kalkulator putnih troškova
               </h1>
             </div>

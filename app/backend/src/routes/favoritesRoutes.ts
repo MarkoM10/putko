@@ -5,6 +5,7 @@ import {
   deleteFavorite,
   getFavorites,
   IFavoritesRequest,
+  updateFavoriteAlias,
 } from "../controllers/favoritesController";
 
 const router = Router();
@@ -20,5 +21,7 @@ router.get("/favorites", authMiddleware, (req, res) => {
 router.delete("/favorites", authMiddleware, (req, res) => {
   deleteFavorite(req as IFavoritesRequest, res);
 });
+
+router.patch("/favorites/:id", authMiddleware, updateFavoriteAlias);
 
 export default router;

@@ -8,66 +8,66 @@ import { loginService } from "../services/loginService";
 import { showAlert } from "../redux/alert/alertSlice";
 import { setToken } from "../redux/token/tokenSlice";
 import { setUser } from "../redux/user/userSlice";
+import { validateLoginForm } from "../utils/formValidation";
 
 const LoginForm = () => {
+  //Hooks
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+
+  //States
   const [loginFormData, setLoginFormData] = useState<ILogInFormData>({
     email: "",
     password: "",
   });
-  const [validationState, setValidationState] = useState<
-    Record<string, boolean>
-  >({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
+  //Getting user input and setting it into state object
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { value, name } = e.target;
-    // const isValid =
-    //   name === "confirmPassword"
-    //     ? handleSignInFormValidation(value, name, signInFormData.password)
-    //     : handleSignInFormValidation(value, name);
-
-    // setValidationState((prev) => ({
-    //   ...prev,
-    //   [name]: isValid,
-    // }));
-
     setLoginFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
+  //Handling form submission
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    dispatch(showSpinner());
+    const { email, password } = loginFormData;
+    const { isValid, errors } = validateLoginForm(email, password);
+    setFormErrors(errors);
 
-    const result = await loginService(loginFormData);
-    dispatch(hideSpinner());
+    //If input validation is successful login request is made
+    if (isValid) {
+      dispatch(showSpinner());
+      const result = await loginService(loginFormData);
+      dispatch(hideSpinner());
+      const { message, success, token, user } = result;
 
-    const { message, success, token, user } = result;
+      //Displaying result of request
+      dispatch(showAlert({ success, message }));
 
-    dispatch(setToken(token));
-    dispatch(showAlert({ success, message }));
-
-    if (success) {
-      dispatch(
-        setUser({
-          user_id: user.user_id,
-          username: user.username,
-          user_email: user.user_email,
-        })
-      );
-      navigate("/home");
+      //If request is successful, token and user are set, user is navigated to the home page
+      if (success) {
+        dispatch(setToken(token));
+        dispatch(
+          setUser({
+            user_id: user.user_id,
+            username: user.username,
+            user_email: user.user_email,
+          })
+        );
+        navigate("/home");
+      }
     }
   };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
+    <form onSubmit={(e) => handleSubmit(e)} className="space-y-4" noValidate>
       <h1 className="text-primary-900 font-josefin text-2xl  font-bold  text-center">
         Uloguj se
       </h1>
@@ -82,6 +82,9 @@ const LoginForm = () => {
           required
           onChange={(e) => handleInputChange(e)}
         />
+        {formErrors.email && (
+          <p className="text-danger-400 text-sm mt-1">{formErrors.email}</p>
+        )}
       </div>
       <div>
         <label className="block mb-1 text-sm text-secondary font-inter">
@@ -94,6 +97,9 @@ const LoginForm = () => {
           required
           onChange={(e) => handleInputChange(e)}
         />
+        {formErrors.password && (
+          <p className="text-danger-400 text-sm mt-1">{formErrors.password}</p>
+        )}
       </div>
       <button
         type="submit"
