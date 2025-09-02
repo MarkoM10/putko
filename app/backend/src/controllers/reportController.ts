@@ -12,6 +12,9 @@ export interface IReportRequest extends Request {
 }
 
 export const createReport = async (req: IReportRequest, res: Response) => {
+  if (!req.user)
+    return res.status(401).json({ message: "Korisnik nije autorizovan." });
+
   try {
     const { trip_id } = req.body;
     if (!trip_id)
@@ -89,10 +92,9 @@ export const createReport = async (req: IReportRequest, res: Response) => {
 
 // Dobavljanje svih PDF izveštaja logovanog korisnika
 export const getReports = async (req: IReportRequest, res: Response) => {
+  if (!req.user)
+    return res.status(401).json({ message: "Korisnik nije autorizovan." });
   try {
-    if (!req.user)
-      return res.status(401).json({ message: "Korisnik nije autorizovan." });
-
     const reports = await prisma.pdf_reports.findMany({
       where: {
         trips: { user_id: req.user.id },

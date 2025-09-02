@@ -26,7 +26,6 @@ function App() {
               <Route path="trips" element={<Trips />} />
               <Route path="favorites" element={<Favorites />} />{" "}
               <Route path="reports" element={<Reports />} />
-              {/* <Route path="profile" element={<Profile />} />  */}
             </Route>
           </Route>
         </Routes>

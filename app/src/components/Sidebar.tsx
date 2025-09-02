@@ -1,12 +1,4 @@
-import {
-  User,
-  Plane,
-  Heart,
-  FileText,
-  BarChart2,
-  LogOut,
-  Calculator,
-} from "lucide-react";
+import { User, Plane, Heart, FileText, LogOut, Calculator } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setModal } from "../redux/modal/modalSlice";

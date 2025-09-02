@@ -1,12 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { closeModal } from "../redux/modal/modalSlice";
-import {
-  ButtonHTMLAttributes,
-  ChangeEvent,
-  ReactEventHandler,
-  useState,
-} from "react";
+import { ChangeEvent, useState } from "react";
 import { clearToken } from "../redux/token/tokenSlice";
 import { useNavigate } from "react-router-dom";
 import { createReportService } from "../services/createReportService";

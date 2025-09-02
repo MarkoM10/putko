@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { IReport } from "../interfaces/interfaces";
 import { getReportsService } from "../services/getReportsService";
 import dayjs from "dayjs";
-import { Eye, FileDown } from "lucide-react";
+import { Eye } from "lucide-react";
 import { showAlert } from "../redux/alert/alertSlice";
 
 const Reports = () => {

@@ -1,5 +1,4 @@
 import Map from "../components/Map";
-import Modal from "../components/Modal";
 import Sidebar from "../components/Sidebar";
 import { useLocation } from "react-router-dom";
 
@@ -20,7 +19,6 @@ const Putko = ({ children }: any) => {
           <Sidebar />
           {children}
           {pathname === "/home" && <Map />}
-          <Modal />
         </div>
       </div>
     </div>

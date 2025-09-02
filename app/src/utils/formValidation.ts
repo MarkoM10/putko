@@ -1,4 +1,4 @@
-//Form validation
+//Forms validation
 import { TripFormData } from "../interfaces/interfaces";
 
 export const handleTripCalcFormValidation = (

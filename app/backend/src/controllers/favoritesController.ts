@@ -130,7 +130,6 @@ export const updateFavoriteAlias = async (
 
     res.status(200).json({ success: true, favorite: updated });
   } catch (error) {
-    console.error("Greška pri ažuriranju aliasa:", error);
     res.status(500).json({ message: "Greška na serveru." });
   }
 };

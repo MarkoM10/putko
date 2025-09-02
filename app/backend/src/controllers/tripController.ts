@@ -34,6 +34,9 @@ export const createTrip = async (
   req: ITripRequest,
   res: Response
 ): Promise<any> => {
+  if (!req.user)
+    return res.status(401).json({ message: "Korisnik nije autorizovan." });
+
   try {
     const {
       origin,
@@ -44,10 +47,6 @@ export const createTrip = async (
       is_round_trip,
       tolls,
     } = req.body;
-
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
 
     const distance_km = await fetchDistance(origin, destination);
 
@@ -81,7 +80,6 @@ export const createTrip = async (
       .status(201)
       .json({ message: "Uspešno ste kreirali putovanje!", trip });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: "Greška pri kreiranju putovanja." });
   }
 };
@@ -94,11 +92,9 @@ export interface IGetTripsRequest extends Request {
 }
 
 export const getTrips = async (req: IGetTripsRequest, res: Response) => {
+  if (!req.user)
+    return res.status(401).json({ message: "Korisnik nije autorizovan." });
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: "Korisnik nije autorizovan." });
-    }
-
     const trips = await prisma.trips.findMany({
       where: { user_id: req.user.id },
       orderBy: { created_at: "desc" },
