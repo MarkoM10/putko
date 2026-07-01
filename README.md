@@ -340,13 +340,13 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 
 **Sign Up Page** — Users create a new account with username, email, and password. Beautiful forest-themed design with intuitive form layout.
 
-![Sign Up Form](docs/screenshots/signup.png)
+![Sign Up Form](./docs/screenshots/signup.png)
 
 ### Calculator
 
 **Trip Cost Calculator** — Main interface where users enter trip details: origin, destination, fuel consumption, fuel price, tolls, number of passengers, and round-trip option. Interactive Google Map displays the route in real-time.
 
-![Trip Calculator](docs/screenshots/calculator.png)
+![Trip Calculator](./docs/screenshots/calculator.png)
 
 **Trip Report** — Displays detailed calculation results including:
 
@@ -358,7 +358,7 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 - Generate PDF button for expense report
 - New calculation button
 
-![Trip Report](docs/screenshots/report.png)
+![Trip Report](./docs/screenshots/report.png)
 
 ### Trip Management
 
@@ -375,7 +375,7 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 - Total cost (RSD & EUR)
 - Actions (delete, favorite)
 
-![Trips History](docs/screenshots/trips.png)
+![Trips History](./docs/screenshots/trips.png)
 
 ### Favorites
 
@@ -387,7 +387,7 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 - Sort by creation date
 - Remove from favorites
 
-![Favorite Routes](docs/screenshots/favorites.png)
+![Favorite Routes](./docs/screenshots/favorites.png)
 
 ### Reports
 
@@ -398,7 +398,7 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 - Download/view action
 - Search and sort functionality
 
-![PDF Reports](docs/screenshots/reports.png)
+![PDF Reports](./docs/screenshots/reports.png)
 
 ---
 
