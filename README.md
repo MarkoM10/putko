@@ -398,7 +398,7 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 - Download/view action
 - Search and sort functionality
 
-![PDF Reports](./app/frontend/src/images/report.png)
+![PDF Reports](./app/frontend/src/images/pdfReports.png)
 
 ---
 
