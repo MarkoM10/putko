@@ -24,7 +24,7 @@ const LoginForm = () => {
 
   //Getting user input and setting it into state object
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { value, name } = e.target;
     setLoginFormData((prev) => ({
@@ -59,7 +59,7 @@ const LoginForm = () => {
             user_id: user.user_id,
             username: user.username,
             user_email: user.user_email,
-          })
+          }),
         );
         navigate("/home");
       }

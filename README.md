@@ -334,6 +334,74 @@ All monetary values are stored and calculated in **RSD (Serbian Dinar)** and dis
 
 ---
 
+## User Interface
+
+### Authentication
+
+**Sign Up Page** — Users create a new account with username, email, and password. Beautiful forest-themed design with intuitive form layout.
+
+![Sign Up Form](docs/screenshots/signup.png)
+
+### Calculator
+
+**Trip Cost Calculator** — Main interface where users enter trip details: origin, destination, fuel consumption, fuel price, tolls, number of passengers, and round-trip option. Interactive Google Map displays the route in real-time.
+
+![Trip Calculator](docs/screenshots/calculator.png)
+
+**Trip Report** — Displays detailed calculation results including:
+
+- Total distance and fuel consumption
+- Fuel cost, tolls, and total trip cost
+- Cost per person (split calculation)
+- Currency conversion (RSD ↔ EUR)
+- Interactive map with route visualization
+- Generate PDF button for expense report
+- New calculation button
+
+![Trip Report](docs/screenshots/report.png)
+
+### Trip Management
+
+**Trip History** — Table view of all saved trips with columns for:
+
+- Trip ID
+- Origin & Destination
+- Distance (KM)
+- Fuel consumption (L)
+- Fuel price (RSD)
+- Tolls (RSD)
+- Passengers count
+- Round-trip status
+- Total cost (RSD & EUR)
+- Actions (delete, favorite)
+
+![Trips History](docs/screenshots/trips.png)
+
+### Favorites
+
+**Saved Routes** — Quick access to frequently used routes with custom aliases. Users can:
+
+- View all bookmarked routes
+- Search by route name
+- Edit route aliases
+- Sort by creation date
+- Remove from favorites
+
+![Favorite Routes](docs/screenshots/favorites.png)
+
+### Reports
+
+**PDF Reports** — View and download all generated expense reports with:
+
+- Report ID and filename
+- Creation date and time
+- Download/view action
+- Search and sort functionality
+
+![PDF Reports](docs/screenshots/reports.png)
+
+---
+
 ## License
 
 This project is for personal and educational use.
